@@ -1,6 +1,6 @@
-#04/22/26
+#04/22/26 - T. Bostwick
 #data processing and analyses for Manuscript 1: wild ocelot genomics
-#data aligned to the new ocelot genome
+#data aligned to the new ocelot genome (Foley et al. 2026; https://doi.org/10.1093/jhered/esaf095)
 #vcf from the lab had minimal filtering, only basic quality control, and no imputation
 
 ###~~~ Filtering steps~~~

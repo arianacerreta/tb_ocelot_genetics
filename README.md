@@ -1,9 +1,9 @@
 ## *Genomic effects of rare gene flow between inbred populations of ocelots (Leopardus pardalis) in the United States*
 
-#### Ann K Postdoc and Sarah J Converse (Paper Authors)
+#### Tyler Bostwick et al. (add upon submission)
 
-##### Please contact the first author for questions about the code or data: (add Name and email)
-##### Secondary contact: Sarah Converse (sconver@usgs.gov)
+##### Please contact the first author for questions about the code or data: Tyler Bostwick (add email)
+##### Secondary contact: Lisanne Petracca (Lisanne.Petracca@tamuk.edu)
 
 _______________________________________________________________________________________
 
@@ -41,10 +41,12 @@ dplyr_1.0.5
 
 ### Details of Article 
 
-(Citation here, see example) 
-
-Warlick AJ, DS Johnson, TS Gelatt, and SJ Converse. 2022. Environmental drivers of demography and potential factors limiting the recovery of an endangered marine top predator. Ecosphere 2022:e4325. https://doi.org/10.1002/ecs2.4325. 
+(Citation here) 
 
 ### How to Use this Repository 
 
-(Provide some guidance here to users, is there an order in which they should run things, for example?)  
+#### 1. Filtering steps
+
+select autosomes, remove indels and non-biallelic snps, filter for genotype quality >9 (./scripts/1_bcftools_preprocessing.sh)
+
+rename chromosomes, give unique IDs to SNPS, subset to wild individuals, filtering (./scripts/2_PLINK_preanalysis.R)
