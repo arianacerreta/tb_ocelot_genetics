@@ -1,4 +1,4 @@
-## *Great GitHub Repos through the Ages* (Paper Title)
+## *Genomic effects of rare gene flow between inbred populations of ocelots (Leopardus pardalis) in the United States*
 
 #### Ann K Postdoc and Sarah J Converse (Paper Authors)
 
