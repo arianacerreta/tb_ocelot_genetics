@@ -45,8 +45,12 @@ dplyr_1.0.5
 
 ### How to Use this Repository 
 
-#### 1. Filtering steps
+#### Filtering steps
 
-select autosomes, remove indels and non-biallelic snps, filter for genotype quality >9 [1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh)
+1.[1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh)
 
-rename chromosomes, give unique IDs to SNPS, subset to wild individuals, filtering [2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R)
+- select autosomes, remove indels and non-biallelic snps, filter for genotype quality >9 
+
+2.[2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R)
+
+- rename chromosomes, give unique IDs to SNPS, subset to wild individuals, filtering 
