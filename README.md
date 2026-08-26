@@ -47,6 +47,6 @@ dplyr_1.0.5
 
 #### 1. Filtering steps
 
-select autosomes, remove indels and non-biallelic snps, filter for genotype quality >9 (./scripts/1_bcftools_preprocessing.sh)
+select autosomes, remove indels and non-biallelic snps, filter for genotype quality >9 [1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh)
 
-rename chromosomes, give unique IDs to SNPS, subset to wild individuals, filtering (./scripts/2_PLINK_preanalysis.R)
+rename chromosomes, give unique IDs to SNPS, subset to wild individuals, filtering [2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R)
