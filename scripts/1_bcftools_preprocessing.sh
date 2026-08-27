@@ -23,5 +23,5 @@ bcftools % ./bcftools view -r A1_RagTag,A2_RagTag,A3_RagTag,B1_RagTag,B2_RagTag,
 -O z -o /path/1_Data/1_Working_Files/Filter_testing/allInd_SNPs_autosomes.vcf.gz
           
 ###filtering for genotype quality scores in bcftools -- score of 9 used as min
-####code tells bcftools to exclude (-e) and snps that have a genotype score or less than 9, then reads in the file, and outputs the new filtered file
+####code tells bcftools to exclude (-e) any snps that have a genotype score or less than 9, then reads in the file, and outputs the new filtered file
 ./bcftools filter -e 'FMT/GQ < 9' \ /path/1_Data/1_Working_Files/Filter_testing/allInd_SNPs_autosomes.vcf.gz \ -O z -o allInd_SNPs_autosomes_bi_gq9.vcf.gz

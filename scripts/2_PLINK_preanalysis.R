@@ -1,20 +1,29 @@
-#if you are running this code from a forked repository, you will need to update "./plink" to the directory where plink is located or properly configure your working directory
+#Pre-Analysis formatting with PLINK
+##Common pitfalls: 1) wrong PLINK binary called (i.e. trying to run MAC-OS executable on Windows/Linux, 
+##2) check your paths, 3) check how your paths are printed if cloud storage added pesky spaces and & symbols)
 
-setwd("D:/2_TB_Working_Files/Plink_files") #WD if working out of the hard drive
+#Define paths
+##update with your path to PLINK and PLINK2
+PLINKpath<-"F:/2_TB_Working_Files/Plink_files/WindowsPLINK"
 
-#cd ../../../../../../../d/2_TB_Working_Files/Plink_files
+##inputs on Zenodo (ADD DOI): allInd_SNPs_autosomes.vcf.gz
+##update with your path
+ZenodoVCFpath<-"F:/2_TB_Working_Files/Manu_Files/allInd_SNPs_autosomes.vcf.gz"
 
-####creating plink files from the base file created from BCFtools####
-system("./plink2 --vcf ../Manu_Files/allInd_SNPs_autosomes.vcf.gz --keep-allele-order --allow-extra-chr --vcf-min-dp 7 --vcf-max-dp 22 --max-alleles 2 --chr-set 17 --make-bed --out SNP_AllChrom_AllInd_dp7_gq9_bi")
-system("./plink2 --vcf ../Manu_Files/allInd_SNPs_autosomes.vcf.gz --keep-allele-order --allow-extra-chr --vcf-min-dp 7 --vcf-max-dp 22 --max-alleles 2 --chr-set 17 --make-bed --out ../SNP_AllChrom_AllInd_dp7_gq9_bi")
+##output path
+OUT<- paste0(getwd(), "/data/processed/")
+OUT_name<-shQuote(paste0(OUT, "SNP_AllChrom_AllInd_dp7_gq9_bi"), type = "cmd") #change type as appropriate for your OS shell
 
-#89 individuals 103792041 variants remain after filter for depth and biallelic
+#PLINK pre-analysis setup
+##creating plink files from the base file created from BCFtools
+system(paste0(PLINKpath,"/plink2 --vcf ", ZenodoVCFpath," --keep-allele-order --allow-extra-chr --vcf-min-dp 7 --vcf-max-dp 22 --max-alleles 2 --chr-set 17 --make-bed --out ", OUT_name))
+###89 individuals 103792041 variants remain after filter for depth and biallelic
 
-####creating base plink files pre-standard filtering####
-##renaming chromosomes to a standard number based, which is what plink is expecting
-bim <- read.table("SNP_AllChrom_AllInd_dp7_gq9_bi.bim", stringsAsFactors = FALSE)
+##creating base plink files pre-standard filtering
+###renaming chromosomes to a standard number based, which is what plink is expecting
+bim <- read.table("./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi.bim", stringsAsFactors = FALSE)
 colnames(bim) <- c("chr", "snp", "cm", "pos", "a1", "a2")
-#get the unique chr names
+###get the unique chr names
 unique_chrs <- unique(bim$chr)
 print(unique_chrs)
 chr_map <- data.frame(
@@ -23,14 +32,15 @@ chr_map <- data.frame(
   stringsAsFactors = FALSE
 )
 print(chr_map)
-#apply that to the bim file directly
+###apply that to the bim file directly
 for (i in 1:nrow(chr_map)) {
   bim$chr[bim$chr == chr_map$old_chr[i]] <- chr_map$new_chr[i]
 }
-#write updated bim file
+###write updated bim file
 write.table(bim, "SNP_AllInd_unfilt_chrfix.bim", quote = FALSE, sep = "\t", 
             row.names = FALSE, col.names = FALSE)
-#have plink write new bim bam bed files with the new bim file we created
+
+##have plink write new bim bam bed files with the new bim file we created
 system("./plink --bed SNP_AllChrom_AllInd_dp7_gq9_bi.bed --bim SNP_AllInd_unfilt_chrfix.bim --fam SNP_AllChrom_AllInd_dp7_gq9_bi.fam --make-bed --out SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix")
 
 ###give snp ids -- labels every snps with a unique code

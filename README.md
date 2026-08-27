@@ -31,13 +31,22 @@ Contains raw and processed results.
 
 Contains pdf versions of all figures in manuscript. 
 
-### Required Packages and Versions Used 
+### Required Packages and Programs and Versions Used 
 
 (here, list all required packages and the version you used, see examples) 
+R packages:
 
 here_1.0.1
 
 dplyr_1.0.5
+
+Additional Programs:
+
+bcftools
+
+plink1.9
+
+PLINK v2.0.0-a.7.4
 
 ### Details of Article 
 
