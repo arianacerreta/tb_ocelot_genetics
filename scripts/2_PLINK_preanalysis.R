@@ -6,9 +6,9 @@
 ##update with your path to PLINK and PLINK2
 PLINKpath<-"F:/2_TB_Working_Files/Plink_files/WindowsPLINK"
 
-##inputs on Zenodo (ADD DOI): allInd_SNPs_autosomes.vcf.gz
+##inputs on Zenodo (ADD DOI): allInd_SNPs_autosomes.vcf.gz originally; Ariana updated to allInd_SNPs_autosomes_bi_gq9.vcf.gz to incorporate gq9
 ##update with your path
-ZenodoVCFpath<-"F:/2_TB_Working_Files/Manu_Files/allInd_SNPs_autosomes.vcf.gz"
+ZenodoVCFpath<-"F:/2_TB_Working_Files/Manu_Files/allInd_SNPs_autosomes_bi_gq9.vcf.gz"
 
 ##output path
 OUT<- paste0(getwd(), "/data/processed/")
@@ -17,7 +17,8 @@ OUT_name<-shQuote(paste0(OUT, "SNP_AllChrom_AllInd_dp7_gq9_bi"), type = "cmd") #
 #PLINK pre-analysis setup
 ##creating plink files from the base file created from BCFtools
 system(paste0(PLINKpath,"/plink2 --vcf ", ZenodoVCFpath," --keep-allele-order --allow-extra-chr --vcf-min-dp 7 --vcf-max-dp 22 --max-alleles 2 --chr-set 17 --make-bed --out ", OUT_name))
-###89 individuals 103792041 variants remain after filter for depth and biallelic
+###allInd_SNPs_autosomes.vcf.gz: 89 individuals 103792041 variants remain after filter for depth and biallelic
+###allInd_SNPs_autosomes_bi_gq9.vcf.gz: 89 individuals 3176850 variants remain after filter for depth, biallelic, and gq9
 
 ##creating base plink files pre-standard filtering
 ###renaming chromosomes to a standard number based, which is what plink is expecting
@@ -32,23 +33,26 @@ chr_map <- data.frame(
   stringsAsFactors = FALSE
 )
 print(chr_map)
+
 ###apply that to the bim file directly
 for (i in 1:nrow(chr_map)) {
   bim$chr[bim$chr == chr_map$old_chr[i]] <- chr_map$new_chr[i]
 }
 ###write updated bim file
-write.table(bim, "SNP_AllInd_unfilt_chrfix.bim", quote = FALSE, sep = "\t", 
+write.table(bim, "./data/processed/SNP_AllInd_unfilt_chrfix.bim", quote = FALSE, sep = "\t", 
             row.names = FALSE, col.names = FALSE)
 
 ##have plink write new bim bam bed files with the new bim file we created
-system("./plink --bed SNP_AllChrom_AllInd_dp7_gq9_bi.bed --bim SNP_AllInd_unfilt_chrfix.bim --fam SNP_AllChrom_AllInd_dp7_gq9_bi.fam --make-bed --out SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix")
+system(paste0(PLINKpath,"/plink --bed ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi.bed --bim ./data/processed/SNP_AllInd_unfilt_chrfix.bim --fam ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi.fam --make-bed --out ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix"))
 
 ###give snp ids -- labels every snps with a unique code
-system("./plink2 --bfile SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix --chr-set 17 --set-all-var-ids @_# --new-id-max-allele-len 20 --make-bed --out SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix_uniqueID")
+system(paste0(PLINKpath,"/plink2 --bfile ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix --chr-set 17 --set-all-var-ids @_# --new-id-max-allele-len 20 --make-bed --out ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix_uniqueID"))
 
 ###subset data -- remove mountain lion and duplicates, for manuscript 1 keeping only wild populations
+system(paste0(PLINKpath,"/plink --bfile ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix_uniqueID --keep ./data/inputs/wild_subset.txt --chr-set 17 --make-bed --out ./data/processed/SNP_wild_dp7_gq9_bi"))
 system("./plink --bfile SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix_uniqueID --keep wild_subset.txt --chr-set 17 --make-bed --out SNP_wild_dp7_gq9_bi")
 #Total genotyping rate in remaining samples is 0.861001; 103792041 variants and 44 samples pass filters and QC.
+
 #at this point, coverage depth of 7, genotype quality of 9, and biallelic filters applied to create base file
 
 ####SNP filtering to create standard data set for all wild LEPA####
