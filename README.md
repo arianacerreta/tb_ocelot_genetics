@@ -44,9 +44,9 @@ Additional Programs:
 
 bcftools
 
-plink1.9
+[PLINK](https://www.cog-genomics.org/plink/1.9/) v1.9.0-b.7.11
 
-PLINK v2.0.0-a.7.4
+[PLINK](https://www.cog-genomics.org/plink/2.0/) v2.0.0-a.7.4
 
 ### Details of Article 
 
