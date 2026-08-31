@@ -42,7 +42,7 @@ dplyr_1.0.5
 
 Additional Programs:
 
-bcftools
+[bcftools](https://samtools.github.io/bcftools/howtos/index.html) v1.24
 
 [PLINK](https://www.cog-genomics.org/plink/1.9/) v1.9.0-b.7.11
 

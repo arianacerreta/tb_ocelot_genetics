@@ -8,7 +8,7 @@ PLINKpath<-"F:/2_TB_Working_Files/Plink_files/WindowsPLINK"
 
 ##inputs on Zenodo (ADD DOI): allInd_SNPs_autosomes.vcf.gz originally; Ariana updated to allInd_SNPs_autosomes_bi_gq9.vcf.gz to incorporate gq9
 ##update with your path
-ZenodoVCFpath<-"F:/2_TB_Working_Files/Manu_Files/allInd_SNPs_autosomes_bi_gq9.vcf.gz"
+ZenodoVCFpath<-"F:/2_TB_Working_Files/Manu_Files/allInd_SNPs_autosomes_bi_gq9.vcf.gz" #3,176,850 SNPs
 
 ##output path
 OUT<- paste0(getwd(), "/data/processed/")
@@ -68,35 +68,40 @@ system(paste0(PLINKpath, "/plink --bfile ./data/processed/SNP_wild_dp7_gq9_bi --
 system(paste0(PLINKpath, "/plink2 --bfile ./data/processed/wild_standard_final --chr-set 17 --export vcf-4.2 bgz --out ./data/processed/wild_standard_final"))
 
 ##split into ranch and refuge for population level nucleotide diversity
-system(paste0(PLINKpath,"/plink --bfile ./data/processed/wild_standard_final --keep ranch_subset_vcftools.txt --chr-set 17 --make-bed --out ranch_standard_postsubset" ))
+system(paste0(PLINKpath,"/plink --bfile ./data/processed/wild_standard_final --keep ./data/inputs/ranch_subset_vcftools.txt --chr-set 17 --make-bed --out ./data/processed/ranch_standard_postsubset"))#ranch
+system(paste0(PLINKpath, "/plink --bfile ./data/processed/wild_standard_final --remove ./data/inputs/ranch_subset_vcftools.txt --chr-set 17 --make-bed --out ./data/processed/refuge_standard_postsubset")) #refuge
 
-system("./plink --bfile wild_standard_final --keep ranch_subset_vcftools.txt --chr-set 17 --make-bed --out ranch_standard_postsubset") #ranch
-
-system("./plink --bfile wild_standard_final --remove ranch_subset_vcftools.txt --chr-set 17 --make-bed --out refuge_standard_postsubset") #refuge
-#export subsetted files
-system("./plink2 --bfile ranch_standard_postsubset --chr-set 17 --export vcf-4.2 bgz --out ranch_standard_postsubset")
-system("./plink2 --bfile refuge_standard_postsubset --chr-set 17 --export vcf-4.2 bgz --out refuge_standard_postsubset")
+#export subset files
+system(paste0(PLINKpath,"/plink2 --bfile ./data/processed/ranch_standard_postsubset --chr-set 17 --export vcf-4.2 bgz --out ./data/processed/ranch_standard_postsubset"))
+system(paste0(PLINKpath,"/plink2 --bfile ./data/processed/refuge_standard_postsubset --chr-set 17 --export vcf-4.2 bgz --out ./data/processed/refuge_standard_postsubset"))
 
 ####additional filtering for select analyses####
 #LD pruning
-system("./plink --bfile wild_standard_final --chr-set 17 --keep-allele-order --indep-pairwise 50 5 0.5 --out wild_LDpruned_0.5_out") #makes an out and in files of SNps to keep and SNPs to remove
-#change to indep-pairwise instead of indep
-system("./plink --bfile wild_standard_final --extract wild_LDpruned_0.5_out.prune.in --chr-set 17 --make-bed --out wild_LDpruned_05") #extract SNPs and create new files
-#Total genotyping rate is 0.925318; 273852 variants and 44 samples pass filters and QC..
+system(paste0(PLINKpath,"/plink --bfile ./data/processed/wild_standard_final --chr-set 17 --keep-allele-order --indep-pairwise 50 5 0.5 --out ./data/processed/addtl_filter/wild_LDpruned_0.5_out")) #makes an out and in files of SNPs to keep and SNPs to remove
+system(paste0(PLINKpath,"/plink --bfile ./data/processed/wild_standard_final --extract ./data/processed/addtl_filter/wild_LDpruned_0.5_out.prune.in --chr-set 17 --make-bed --out ./data/processed/addtl_filter/wild_LDpruned_05")) #extract SNPs and create new files
+
+#Total genotyping rate is 0.929091;38,757 variants and 44 samples pass filters and QC.
+
 #write vcf
+system(paste0(PLINKpath,"/plink2 --bfile ./data/processed/addtl_filter/wild_LDpruned_05 --chr-set 17 --export vcf-4.2 bgz --out ./data/processed/addtl_filter/wild_LDpruned_05"))
 system("./plink2 --bfile wild_LDpruned_05 --chr-set 17 --export vcf-4.2 bgz --out wild_LDpruned_05")
 
 
 #ROH and kinship filters; no MAF, miss 90, biallelic, coverage depth 7, genotype quality 9
 #also used in kinship analyses; as is recommended not to filter for MAF or LD prune
+system(paste0(PLINKpath,""))
 system("./plink --bfile SNP_wild_dp7_gq9_bi --chr-set 17 --keep-allele-order --geno 0.1 --hwe 1e-6 --make-bed --out wild_kin_roh_filter")
 #for bcftools roh selection: ld pruning is required as it assumes every base is independent
+system(paste0(PLINKpath,""))
 system("./plink --bfile wild_kin_roh_filter --chr-set 17 --keep-allele-order --indep-pairwise 50 5 0.5 --out roh_LDpruned_0.5_out") #makes an out and in files of SNps to keep and SNPs to remove
 #change to indep-pairwise instead of indep
+system(paste0(PLINKpath,""))
 system("./plink --bfile wild_kin_roh_filter --extract roh_LDpruned_0.5_out.prune.in --chr-set 17 --make-bed --out roh_LDpruned_05") #extract SNPs and create new files
 #Total genotyping rate is 0.925318; 273852 variants and 44 samples pass filters and QC..
 #write vcf
+system(paste0(PLINKpath,""))
 system("./plink2 --bfile roh_LDpruned_05 --chr-set 17 --export vcf-4.2 bgz --out roh_LDpruned_05")
 #2216544 variants and 44 samples pass filters and QC.
 #output as vcf for use in bcftools
+system(paste0(PLINKpath,""))
 system("./plink2 --bfile wild_kin_roh_filter --chr-set 17 --export vcf-4.2 bgz --out wild_kin_roh_filter")

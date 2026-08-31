@@ -27,4 +27,4 @@ bcftools % ./bcftools view -r A1_RagTag,A2_RagTag,A3_RagTag,B1_RagTag,B2_RagTag,
 ./bcftools filter -e 'FMT/GQ < 9' \
 /path/allInd_SNPs_autosomes.vcf.gz \
 -O z -o allInd_SNPs_autosomes_bi_gq9.vcf.gz
-
+#3,176,850 SNPs
