@@ -17,8 +17,8 @@ OUT_name<-shQuote(paste0(OUT, "SNP_AllChrom_AllInd_dp7_gq9_bi"), type = "cmd") #
 #PLINK pre-analysis setup
 ##creating plink files from the base file created from BCFtools
 system(paste0(PLINKpath,"/plink2 --vcf ", ZenodoVCFpath," --keep-allele-order --allow-extra-chr --vcf-min-dp 7 --vcf-max-dp 22 --max-alleles 2 --chr-set 17 --make-bed --out ", OUT_name))
-###allInd_SNPs_autosomes.vcf.gz: 89 individuals 103792041 variants remain after filter for depth and biallelic
-###allInd_SNPs_autosomes_bi_gq9.vcf.gz: 89 individuals 3176850 variants remain after filter for depth, biallelic, and gq9
+###NO GQ: allInd_SNPs_autosomes.vcf.gz: 89 individuals 103,792,041 variants remain after filter for depth and biallelic
+###GQ9: allInd_SNPs_autosomes_bi_gq9.vcf.gz: 89 individuals 3,176,850 variants remain after filter for depth, biallelic, and gq9
 
 ##creating base plink files pre-standard filtering
 ###renaming chromosomes to a standard number based, which is what plink is expecting
@@ -45,29 +45,33 @@ write.table(bim, "./data/processed/SNP_AllInd_unfilt_chrfix.bim", quote = FALSE,
 ##have plink write new bim bam bed files with the new bim file we created
 system(paste0(PLINKpath,"/plink --bed ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi.bed --bim ./data/processed/SNP_AllInd_unfilt_chrfix.bim --fam ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi.fam --make-bed --out ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix"))
 
-###give snp ids -- labels every snps with a unique code
+###give snp ids -- labels every snp with a unique code
 system(paste0(PLINKpath,"/plink2 --bfile ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix --chr-set 17 --set-all-var-ids @_# --new-id-max-allele-len 20 --make-bed --out ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix_uniqueID"))
 
 ###subset data -- remove mountain lion and duplicates, for manuscript 1 keeping only wild populations
 system(paste0(PLINKpath,"/plink --bfile ./data/processed/SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix_uniqueID --keep ./data/inputs/wild_subset.txt --chr-set 17 --make-bed --out ./data/processed/SNP_wild_dp7_gq9_bi"))
-system("./plink --bfile SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix_uniqueID --keep wild_subset.txt --chr-set 17 --make-bed --out SNP_wild_dp7_gq9_bi")
-#Total genotyping rate in remaining samples is 0.861001; 103792041 variants and 44 samples pass filters and QC.
 
-#at this point, coverage depth of 7, genotype quality of 9, and biallelic filters applied to create base file
+#Total genotyping rate in remaining samples is 0.883705; 3,176,850 variants and 44 samples pass filters and QC
+
+#at this point, coverage depth of 7-22, genotype quality of 9, and biallelic filters applied to create base file
 
 ####SNP filtering to create standard data set for all wild LEPA####
 #apply filters -- maf, miss, hwe> base, other adjustments can follow
 ###Wild
-system("./plink --bfile SNP_wild_dp7_gq9_bi --chr-set 17 --keep-allele-order --maf 0.05 --geno 0.1 --hwe 1e-6 --make-bed --out wild_standard_final")
-#66269934 variants removed due to missing genotype data (--geno)
-#3576 variants removed due to Hardy-Weinberg exact test
-#33435588 variants removed due to minor allele threshold(s)
-#4082943 variants and 44 samples pass filters and QC.
+system(paste0(PLINKpath, "/plink --bfile ./data/processed/SNP_wild_dp7_gq9_bi --chr-set 17 --keep-allele-order --maf 0.05 --geno 0.1 --hwe 1e-6 --make-bed --out ./data/processed/wild_standard_final"))
+#1,819,607 variants removed due to missing genotype data (--geno)
+#607 variants removed due to Hardy-Weinberg exact test
+#878,251 variants removed due to minor allele threshold(s)
+#478,385 variants and 44 samples pass filters and QC
 
 ####Export full wild standard vcf
-system("./plink2 --bfile wild_standard_final --chr-set 17 --export vcf-4.2 bgz --out wild_standard_final")
-##split into ranch and refuge for population level nucleotide diveristy
+system(paste0(PLINKpath, "/plink2 --bfile ./data/processed/wild_standard_final --chr-set 17 --export vcf-4.2 bgz --out ./data/processed/wild_standard_final"))
+
+##split into ranch and refuge for population level nucleotide diversity
+system(paste0(PLINKpath,"/plink --bfile ./data/processed/wild_standard_final --keep ranch_subset_vcftools.txt --chr-set 17 --make-bed --out ranch_standard_postsubset" ))
+
 system("./plink --bfile wild_standard_final --keep ranch_subset_vcftools.txt --chr-set 17 --make-bed --out ranch_standard_postsubset") #ranch
+
 system("./plink --bfile wild_standard_final --remove ranch_subset_vcftools.txt --chr-set 17 --make-bed --out refuge_standard_postsubset") #refuge
 #export subsetted files
 system("./plink2 --bfile ranch_standard_postsubset --chr-set 17 --export vcf-4.2 bgz --out ranch_standard_postsubset")

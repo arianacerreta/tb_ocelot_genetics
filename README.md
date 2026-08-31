@@ -56,10 +56,10 @@ bcftools
 
 #### Filtering steps
 
-1.[1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh)
+[1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh)
 
 - select autosomes, remove indels and non-biallelic snps, filter for genotype quality >9 
 
-2.[2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R)
+[2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R)
 
 - rename chromosomes, give unique IDs to SNPS, subset to wild individuals, filtering 

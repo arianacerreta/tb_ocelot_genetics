@@ -6,3 +6,4 @@ figures/
 *.jpg
 *.docx
 data/processed
+/not_public/
