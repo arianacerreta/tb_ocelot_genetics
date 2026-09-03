@@ -19,7 +19,8 @@ Contains scripts to run all analyses. Analyses were primarily conducted in R, ho
  
 ### [Data](./data) 
 
-Contains input files, which are small files used to subset data. Raw data will need to be downloaded from [Zenodo](./data) and stored locally on your device due to file size constraints. If you fork this repository and run the code starting with [Script 1](./scripts/1_bcftools_preprocessing.sh), [Script 2](./scripts/2_PLINK_preanalysis.R) will create a directories for processed data locally. These folders are not pushed to the GitHub repository due to file size. 
+Contains input files, which are small files used to subset data. Raw data will need to be downloaded from [Zenodo](./data) and stored locally on your device due to file size constraints. If you fork this repository and run the code, it will create a directories for processed data locally. These folders are not pushed to the GitHub repository due to file size. 
+
 NOTE: Ariana fix Zenodo link once data files uploaded
 
 ### [Results](./results)
@@ -32,12 +33,11 @@ Contains pdf versions of all figures in manuscript.
 
 ### Required Packages and Programs and Versions Used 
 
-(here, list all required packages and the version you used, see examples) 
 R packages:
 
-here_1.0.1
+here_1.0.1 (update)
 
-dplyr_1.0.5
+dplyr_1.0.5 (update)
 
 Additional Programs:
 
@@ -49,7 +49,7 @@ Additional Programs:
 
 ### Details of Article 
 
-Bostwick, T et al. Genomic effects of rare gene flow between inbred populations of ocelots (*Leopardus pardalis*) in the United States, In Prep  
+Bostwick, T et al. Genomic effects of rare gene flow between inbred populations of ocelots (*Leopardus pardalis*) in the United States. In Prep  
 
 ### How to Use this Repository 
 
