@@ -13,15 +13,14 @@ ________________________________________________________________________________
 
 ### Table of Contents 
 
-(Add detail on what is in each folder within the repo - see the template for all possible folders, but at a minimum you should have the folders below, see examples below.) 
-
 ### [Scripts](./scripts)
 
-Contains scripts to run all analyses. 
+Contains scripts to run all analyses. Analyses were primarily conducted in R, however some shell code is also included when necessary. 
  
 ### [Data](./data) 
 
-Contains raw and processed data.
+Contains input files, which are small files used to subset data. Raw data will need to be downloaded from [Zenodo](./data) and stored locally on your device due to file size constraints. If you fork this repository and run the code starting with [Script 1](./scripts/1_bcftools_preprocessing.sh), [Script 2](./scripts/2_PLINK_preanalysis.R) will create a directories for processed data locally. These folders are not pushed to the GitHub repository due to file size. 
+NOTE: Ariana fix Zenodo link once data files uploaded
 
 ### [Results](./results)
 
@@ -50,7 +49,7 @@ Additional Programs:
 
 ### Details of Article 
 
-(Citation here) 
+Bostwick, T et al. Genomic effects of rare gene flow between inbred populations of ocelots (*Leopardus pardalis*) in the United States, In Prep  
 
 ### How to Use this Repository 
 
