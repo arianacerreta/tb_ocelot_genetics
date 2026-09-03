@@ -1,2 +1,3 @@
 1_bcftools_preprocessing.sh: shell code to run in command line for processing the joint_call.LAO03M.20251202.vcf.gz provided from Texas A&M University
-2_PLINK_preanalysis.R: R code used to call PLINK and perform filtering prior to analyses
+2_PLINK_preanalysis.R: R code used to call PLINK/PLINK2 and perform filtering prior to analyses
+3_PCA_analysis: R code used to call PLINK for PCA analysis and use R packages for plotting

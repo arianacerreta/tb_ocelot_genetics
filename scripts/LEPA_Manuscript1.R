@@ -219,7 +219,7 @@ wild_pca
 ggsave("wild_pca.png", dpi = 300)
 
 ####Kinship -- Done!####
-##king-robust kingship estimator for WILD individuals 
+##king-robust kinship estimator for WILD individuals 
 system("./plink2 --bfile wild_kin_roh_filter --make-king-table --allow-extra-chr --chr-set 17 --out wild_KING_manu")
 king.wild.matrix <- read.table("wild_KING_manu.kin0", header = FALSE) #make king table into object
 colnames(king.wild.matrix) <- c("#FID1", "IID1", "FID2", "IID2", "NSNP", "HETHET", "IBS0", "KINSHIP") #add column header

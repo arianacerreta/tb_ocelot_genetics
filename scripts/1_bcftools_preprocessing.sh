@@ -1,3 +1,6 @@
+#Orginal author: Tyler Bostwick
+#Edited: Ariana Cerreta, 02-Sept-2026
+
 #Instructions: edit the corresponding paths to match your directory paths before running code; if on mac run L5 to troubleshoot PLINK2; others start on L8
 
 ##to get plink to run on the mac, needed to delete the mac quarantine by using the following code in terminal:
@@ -19,12 +22,28 @@ bcftools % ./bcftools view -r A1_RagTag,A2_RagTag,A3_RagTag,B1_RagTag,B2_RagTag,
 ####this code first normalizes the data set, separating the individual alleles. This allows the code to then remove indels (as some indels can be an alt allele to a snp),
 ####then it removes any sites that have only 1 allele, and any that the have more than two -- essentially the biallelic filter
 ####in total, this allows the indel filter to catch all instances of indels, then remove uninformative sites and multiallelic sites leaving only biallelic snps
-./bcftools norm -m -any \ /path/joint_call_autosomes.vcf.gz \ | ./bcftools view -v snps -m2 -M2 \
+./bcftools norm --fasta-ref /path/genome.fasta -d exact -m -any \
+/path/joint_call_autosomes.vcf.gz \ | ./bcftools view -v snps -m2 -M2 \
 -O z -o /path/allInd_SNPs_autosomes.vcf.gz
-          
+ #total/split/joined/realigned/mismatch_removed/dup_removed/skipped:      120,040,661/12,342,780/0/73,29,007/0/0/0
+
+#still has MNPs listed on separate lines; normalize with flag to merge SNPs into MNPs, filter again with bcftools to remove
+./bcftools norm --multiallelics +any /path/file.vcf.gz \ | ./bcftools view -v snps -m2 -M2 \
+-O z -o /path/new.vcf.gz
+
+#total/split/joined/realigned/mismatch_removed/dup_removed/skipped:      103,792,041/0/1,854,031/0/0/0/0
+#100,060,816 SNPs left
+
 ###filtering for genotype quality scores in bcftools -- score of 9 used as min
 ####code tells bcftools to exclude (-e) any snps that have a genotype score or less than 9, then reads in the file, and outputs the new filtered file
 ./bcftools filter -e 'FMT/GQ < 9' \
 /path/allInd_SNPs_autosomes.vcf.gz \
 -O z -o allInd_SNPs_autosomes_bi_gq9.vcf.gz
-#3,176,850 SNPs
+#3,037,289 SNPs
+
+
+
+#testing
+./bcftools norm --fasta-ref /path/genome.fasta -d exact --multiallelics +any \
+/path/joint_call_autosomes.vcf.gz \ | ./bcftools view -v snps -m2 -M2 \
+-O z -o /path/allInd_SNPs_autosomes.vcf.gz

@@ -62,4 +62,14 @@ Additional Programs:
 
 [2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R)
 
-- rename chromosomes, give unique IDs to SNPS, subset to wild individuals, filtering 
+- rename chromosomes, give unique IDs to SNPS, subset to wild individuals, filtering
+
+#### Analyses
+
+[3_PCA_analysis.R](./scripts/3_PCA_analysis.R)
+
+- perform PCA on wild ocelots and plot
+
+[4_KING-robust_analysis.R](./scripts/4_KING-robust_analysis.R)
+
+- calls PLINK2 to calculate KING-robust kinship estimator for WILD individuals and plots
