@@ -1,0 +1,27 @@
+PLINK v1.9.0-b.7.11 64-bit (19 Aug 2025)
+Options in effect:
+  --bfile ./data/processed/wild_standard_final
+  --chr-set 17
+  --out ./results/pca/pca_wild
+  --pca
+
+Hostname: HAGL159-31BNTT3
+Working directory: C:\Users\kualc095\OneDrive - Texas A&M University - Kingsville\Ocelots\LEPA_Manuscript1_Bostwick\tb_ocelot_genetics
+Start time: Fri Sep 04 11:00:46 2026
+
+Random number seed: 1788537646
+32376 MB RAM detected; reserving 16188 MB for main workspace.
+459917 variants loaded from .bim file.
+44 samples (0 males, 0 females, 44 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to ./results/pca/pca_wild.nosex .
+Using up to 19 threads (change this with --threads).
+Before main variant filters, 44 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.930109.
+459917 variants and 44 samples pass filters and QC.
+Note: No phenotypes present.
+Relationship matrix calculation complete.
+--pca: Results saved to ./results/pca/pca_wild.eigenval and
+./results/pca/pca_wild.eigenvec .
+
+End time: Fri Sep 04 11:00:49 2026

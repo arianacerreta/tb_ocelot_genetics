@@ -118,3 +118,6 @@ system(paste0(PLINKpath,"/plink2 --bfile roh_LDpruned_05 --chr-set 17 --export v
 #2216544 variants and 44 samples pass filters and QC.
 #output as vcf for use in bcftools
 system(paste0(PLINKpath,"/plink2 --bfile wild_kin_roh_filter --chr-set 17 --export vcf-4.2 bgz --out wild_kin_roh_filter"))
+
+#go back to root dir
+setwd("../../..")

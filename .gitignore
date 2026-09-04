@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-figures/
 *.jpg
 *.docx
 data/processed

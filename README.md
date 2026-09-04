@@ -19,7 +19,7 @@ Contains scripts to run all analyses. Analyses were primarily conducted in R, ho
  
 ### [Data](./data) 
 
-Contains input files, which are small files used to subset data. Raw data will need to be downloaded from [Zenodo](./data) and stored locally on your device due to file size constraints. If you fork this repository and run the code, it will create a directories for processed data locally. These folders are not pushed to the GitHub repository due to file size. 
+Contains input files, which are small files used to subset data. Raw data will need to be downloaded from [Zenodo](./data) and stored locally on your device due to file size constraints. If you fork this repository and run the code, it will create a directories for processed data locally. These folders are not pushed to the GitHub repository due to file size. You will need to download the ocelot genome (GCA_058742865.1) for normalization.  
 
 NOTE: Ariana fix Zenodo link once data files uploaded
 
@@ -35,9 +35,9 @@ Contains pdf versions of all figures in manuscript.
 
 R packages:
 
-here_1.0.1 (update)
+dplyr_1.2.1
 
-dplyr_1.0.5 (update)
+ggplot2_4.0.3
 
 Additional Programs:
 
