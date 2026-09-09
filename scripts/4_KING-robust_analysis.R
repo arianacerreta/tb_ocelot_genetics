@@ -29,11 +29,17 @@ wild_origins <- wild_origins %>%
 king.wild.matrix <- king.wild.matrix %>%
   mutate(IID1 = gsub("-.*", "", IID1),
          IID2 = gsub("-.*", "", IID2))
+
+#make csv from the .kin0 file
+dir.create("../../../results/kinship")
+write.csv(king.wild.matrix, "../../../results/kinship/wild_pairwise_kinship_manu.csv")
+
+#formatting for plotting
 king.wild.matrix <- left_join(king.wild.matrix, wild_origins, by = c("IID1"="ID"))%>%
-  rename(Pop1=Pop)
+  rename(Pop1=Pop) #attach population
 
 king.wild.matrix<-left_join(king.wild.matrix, wild_origins, by = c("IID2"="ID"))%>%
-  rename(Pop2=Pop)
+  rename(Pop2=Pop) #attach population
 
 king.wild.matrix<-king.wild.matrix%>%
   mutate(Pop1 = case_when(
@@ -49,12 +55,12 @@ king.wild.matrix<-king.wild.matrix%>%
     IID2 == "E29M" ~ "rdisp",
     IID1 == "E32M" ~ "rdisp",
     TRUE ~ Pop2
-  ))
+  )) #classify dispersers
 
 king.wild.matrix1<-king.wild.matrix%>%
-  arrange(Pop1)
+  arrange(Pop1) #arrange so that ranch, rdisp, refuge (rdisp was used to hack alphabetizing)
 
-ordered_ID<-c("E10F",unique(king.wild.matrix1$IID1))
+ordered_ID<-c("E10F",unique(king.wild.matrix1$IID1)) #concat ends up with E10F at end, need to be front
 
 ordered_IID1<-ordered_ID[2:length(ordered_ID)]
 
@@ -62,19 +68,22 @@ ordered_IID2<- ordered_ID[1:length(ordered_ID)-1]
 
 #make a new matrix so to organize the kinship values and IID1 and IID2 according to ranch, disp, refuge for manuscript
 #this is becuase some IID1, IID2 pairs need to be swapped for proper plotting
-new_ordered_matrix_king<-as.data.frame(matrix(data = NA, nrow=length(king.wild.matrix$IID1), ncol = 3))
-colnames(new_ordered_matrix_king)<-c("IID1", "IID2", "KINSHIP")
+new_ordered_matrix_king<-as.data.frame(matrix(data = NA, nrow=length(king.wild.matrix$IID1), ncol = 3)) #empty dataframe
+colnames(new_ordered_matrix_king)<-c("IID1", "IID2", "KINSHIP") #minimum needed column names
 
-IID1<-rep(ordered_IID1, times=1:length(ordered_IID1))
+IID1<-rep(ordered_IID1, times=1:length(ordered_IID1)) #correct repetitions of each ID for IID1
+
+#correct repetitions of each ID for IID2
 IID2<-vector()
 for (i in 1:length(ordered_IID2)) {
   IDs<-ordered_IID2[1:i]
   IID2<-append(IID2,IDs)
 }
 
-new_ordered_matrix_king$IID1<-IID1
-new_ordered_matrix_king$IID2<-IID2
+new_ordered_matrix_king$IID1<-IID1 #fill in IID1
+new_ordered_matrix_king$IID2<-IID2 #fill in IID2
 
+#search for the pairs in king.wild.matrix and paste in corresponding cell in new dataframe
 for (i in 1:length(new_ordered_matrix_king$IID1)){
   IDs<-c(new_ordered_matrix_king[i,1], new_ordered_matrix_king[i,2])
   Kin<-king.wild.matrix%>%
@@ -84,12 +93,8 @@ for (i in 1:length(new_ordered_matrix_king$IID1)){
 }
 
 new_ordered_matrix_king<- new_ordered_matrix_king %>%
-  mutate(IID1 = factor(IID1, levels = ordered_IID1))%>%
-  mutate(IID2 = factor(IID2, levels = ordered_IID2))
-
-#make csv from the .kin0 file
-dir.create("../../../results/kinship")
-write.csv(king.wild.matrix, "../../../results/kinship/wild_pairwise_kinship_manu.csv")
+  mutate(IID1 = factor(IID1, levels = ordered_IID1))%>% #factor for proper axis order
+  mutate(IID2 = factor(IID2, levels = ordered_IID2)) #factor for proper axis order
 
 #heat map of kinship for wild individuals -- binned
 ggplot(data = new_ordered_matrix_king, aes(x=IID1, y=IID2, fill = KINSHIP)) +
@@ -117,4 +122,11 @@ ggplot(data = new_ordered_matrix_king, aes(x=IID1, y=IID2, fill = KINSHIP)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
         axis.text.y = element_text(hjust = 1.25),
         axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12))
+        axis.title.y = element_text(size = 12),
+        legend.text = element_text(vjust = -1))
+
+ggsave("../../../figures/king_robust_heatmap.pdf", dpi = 1200)
+setwd("~")
+
+#reset directory back to project directory
+setwd("../../..")

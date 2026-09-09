@@ -51,8 +51,8 @@ wild_pca <- ggplot(pca.data.wild.origins, aes(x=V3,y=V4)) +  #plot with individu
             aes(label=ID), vjust=-0.5, hjust=-0.07, size=4, color = "#CC79A7") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("LO01F")), #in correct position
             aes(label=ID), vjust=-0.5, hjust=-0.07, size=4, color = "#009E73") + 
-  scale_color_manual(name = "Origin", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = "#009E73", "ranch" = "#CC79A7")) + #palette colors # & #8 from "Okabe-Ito" designed for color vision deficiencies
-  scale_shape_manual(name = "Origin", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = 19, "ranch" = 17)) +
+  scale_color_manual(name = "Current Population", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = "#009E73", "ranch" = "#CC79A7")) + #palette colors # & #8 from "Okabe-Ito" designed for color vision deficiencies
+  scale_shape_manual(name = "Current Population", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = 19, "ranch" = 17)) +
   labs(x = paste0("PC1 (", pc1_variance, "%)"),
        y = paste0("PC2 (", pc2_variance, "%)")) +
   theme_minimal() +

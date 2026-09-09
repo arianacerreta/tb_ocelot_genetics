@@ -119,5 +119,5 @@ system(paste0(PLINKpath,"/plink2 --bfile roh_LDpruned_05 --chr-set 17 --export v
 #output as vcf for use in bcftools
 system(paste0(PLINKpath,"/plink2 --bfile wild_kin_roh_filter --chr-set 17 --export vcf-4.2 bgz --out wild_kin_roh_filter"))
 
-#go back to root dir
+#go back to project directory
 setwd("../../..")
