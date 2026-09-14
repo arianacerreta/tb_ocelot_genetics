@@ -31,13 +31,14 @@ Contains raw and processed results.
 
 Contains pdf versions of all figures in manuscript. 
 
-### Required Packages and Programs and Versions Used 
+### Required Packages, Programs, and Versions Used 
 
 R packages:
 
 dplyr_1.2.1
 
 ggplot2_4.0.3
+
 
 Additional Programs:
 
@@ -72,3 +73,19 @@ Bostwick, T et al. Genomic effects of rare gene flow between inbred populations 
 [4_KING-robust_analysis.R](./scripts/4_KING-robust_analysis.R)
 
 - calls PLINK2 to calculate KING-robust kinship estimator for WILD individuals and plots
+
+[5.1_admixture_analysis.sh](./scripts/5.1_admixture_analysis.sh)
+
+- calls and runs ADMIXTURE
+
+[5.2_admixture_plotting.R](./scripts/5.2_admixture_plotting.R)
+
+- reads in data from ADMIXTURE runs for plotting
+
+[6.1_ROH_bcftools.sh](./scripts/6.1_ROH_bcftools.sh)
+
+- calls bcftools to perform ROH analysis
+
+[6.2_ROH_plotting.R](./scripts/6.2_ROH_plotting.R)
+
+- plots results from ROH analysis
