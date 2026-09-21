@@ -1,5 +1,5 @@
 #Pre-Analysis formatting with PLINK
-##Orginal author: Tyler Bostwick
+##Original author: Tyler Bostwick
 ##Edits: Ariana Cerreta, 02-Sept-2026
 
 ##Common pitfalls: 1) wrong PLINK binary called (i.e. trying to run MAC-OS executable on Windows/Linux, 
@@ -7,11 +7,11 @@
 
 #Define paths
 ##update with your path to PLINK and PLINK2
-PLINKpath<-"F:/2_TB_Working_Files/Plink_files/WindowsPLINK"
+PLINKpath<-"path/Plink_files/WindowsPLINK"
 
 ##inputs on Zenodo (ADD DOI): allInd_SNPs_autosomes.vcf.gz originally; Ariana updated to allInd_SNPs_autosomes_bi_gq9.vcf.gz to incorporate gq9
 ##update with your path
-ZenodoVCFpath<-"F:/2_TB_Working_Files/Manu_Files/alt_GQfilt/allInd_SNPs_autosomes_bi_gq9_norm_09032026.vcf.gz" #3,037,289 SNPs
+ZenodoVCFpath<-"path/allInd_SNPs_autosomes_bi_gq9.vcf.gz" #2,950,351 SNPs
 
 ##make a new directory
 
@@ -22,9 +22,7 @@ OUT_name<-shQuote(paste0(OUT, "SNP_AllChrom_AllInd_dp7_gq9_bi"), type = "cmd") #
 #PLINK pre-analysis setup
 ##creating plink files from the base file created from BCFtools
 system(paste0(PLINKpath,"/plink2 --vcf ", ZenodoVCFpath," --keep-allele-order --allow-extra-chr --vcf-min-dp 7 --vcf-max-dp 22 --max-alleles 2 --chr-set 17 --make-bed --out ", OUT_name))
-###NO GQ: allInd_SNPs_autosomes.vcf.gz: 89 individuals 103,792,041 variants remain after filter for depth and biallelic
-###GQ9: allInd_SNPs_autosomes_bi_gq9.vcf.gz: 89 individuals 3,176,850 variants remain after filter for depth, biallelic, and gq9
-###updated: allInd_SNPs_autosomes_bi_gq9_norm_09032026.vcf.gz; 89individuals, 3037289 variants remaining after main filters
+### 89individuals, 2950351 variants remaining after main filters
 
 ##creating base plink files pre-standard filtering
 ##now we are working out of ./data/processed/
@@ -60,7 +58,7 @@ system(paste0(PLINKpath,"/plink2 --bfile SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix -
 ###subset data -- remove mountain lion and duplicates, for manuscript 1 keeping only wild populations
 system(paste0(PLINKpath,"/plink --bfile SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix_uniqueID --keep ../inputs/wild_subset.txt --chr-set 17 --make-bed --out SNP_wild_dp7_gq9_bi"))
 
-#Total genotyping rate in remaining samples is 0.883675; 3,037,289 variants and 44 samples pass filters and QC
+#Total genotyping rate in remaining samples is 0.883688; 2,950,351 variants and 44 samples pass filters and QC.
 
 #at this point, coverage depth of 7-22, genotype quality of 9, and biallelic filters applied to create base file
 
@@ -68,10 +66,10 @@ system(paste0(PLINKpath,"/plink --bfile SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix_un
 #apply filters -- maf, miss, hwe> base, other adjustments can follow
 ###Wild
 system(paste0(PLINKpath, "/plink --bfile SNP_wild_dp7_gq9_bi --chr-set 17 --keep-allele-order --maf 0.05 --geno 0.1 --hwe 1e-6 --make-bed --out wild_standard_final"))
-#1,741,098 variants removed due to missing genotype data (--geno).
-#586 variants removed due to Hardy-Weinberg exact test.
-#835,688 variants removed due to minor allele threshold(s)
-#459,917 variants and 44 samples pass filters and QC.
+#1,691,187 variants removed due to missing genotype data (--geno)
+#566 variants removed due to Hardy-Weinberg exact test.
+#813,887 variants removed due to minor allele threshold(s)
+#444711 variants and 44 samples pass filters and QC.
 
 ####Export full wild standard vcf
 system(paste0(PLINKpath, "/plink2 --bfile wild_standard_final --chr-set 17 --export vcf-4.2 bgz --out wild_standard_final"))
@@ -95,11 +93,10 @@ setwd("./addtl_filter/")
 system(paste0(PLINKpath,"/plink --bfile ../wild_standard_final --chr-set 17 --keep-allele-order --indep-pairwise 50 5 0.5 --out wild_LDpruned_0.5_out")) #makes an out and in files of SNPs to keep and SNPs to remove
 system(paste0(PLINKpath,"/plink --bfile ../wild_standard_final --extract wild_LDpruned_0.5_out.prune.in --chr-set 17 --make-bed --out wild_LDpruned_05")) #extract SNPs and create new files
 
-#Total genotyping rate is 0.929221; 37,181 variants and 44 samples pass filters and QC.
+#Total genotyping rate is 0.929204; 36,246 variants and 44 samples pass filters and QC
 
 #write vcf
 system(paste0(PLINKpath,"/plink2 --bfile wild_LDpruned_05 --chr-set 17 --export vcf-4.2 bgz --out wild_LDpruned_05"))
-
 
 #ROH and kinship filters; no MAF, miss 90, biallelic, coverage depth 7, genotype quality 9
 #also used in kinship analyses; as is recommended not to filter for MAF or LD prune
@@ -107,15 +104,17 @@ system(paste0(PLINKpath,"/plink --bfile ../SNP_wild_dp7_gq9_bi --chr-set 17 --ke
 
 #for bcftools roh selection: ld pruning is required as it assumes every base is independent
 system(paste0(PLINKpath,"/plink --bfile wild_kin_roh_filter --chr-set 17 --keep-allele-order --indep-pairwise 50 5 0.5 --out roh_LDpruned_0.5_out")) #makes an out and in files of SNPs to keep and SNPs to remove
-#Pruning complete.  1206078 of 1295605 variants removed.
+#Pruning complete.  1171476 of 1258598 variants removed.
 system(paste0(PLINKpath,"/plink --bfile wild_kin_roh_filter --extract roh_LDpruned_0.5_out.prune.in --chr-set 17 --make-bed --out roh_LDpruned_05")) #extract SNPs and create new files
+#Total genotyping rate is 0.929107; 87122 variants and 44 samples pass filters and QC
 
-#Total genotyping rate is 0.92908; 89527 variants and 44 samples pass filters and QC
+#make .raw file to work with Matt's heterzygosity moving window code
+system(paste0(PLINKpath,"/plink --bfile roh_LDpruned_05 --chr-set 17 --recode A --out roh_LDpruned_05_data_allele"))
 
 #write vcf
 system(paste0(PLINKpath,"/plink2 --bfile roh_LDpruned_05 --chr-set 17 --export vcf-4.2 bgz --out roh_LDpruned_05"))
 
-#2216544 variants and 44 samples pass filters and QC.
+
 #output as vcf for use in bcftools
 system(paste0(PLINKpath,"/plink2 --bfile wild_kin_roh_filter --chr-set 17 --export vcf-4.2 bgz --out wild_kin_roh_filter"))
 
