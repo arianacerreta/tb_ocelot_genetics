@@ -1,5 +1,9 @@
 #PCA Analysis
 ##PCA on Wild individuals
+
+##Original author: Tyler Bostwick
+##Edits: Ariana Cerreta
+
 #library
 library(dplyr)
 library(ggplot2)
@@ -8,7 +12,7 @@ library(ggplot2)
 rm(list = ls())
 
 ##Set paths
-PLINKpath<-"F:/2_TB_Working_Files/Plink_files/WindowsPLINK"
+PLINKpath<-"./path/Plink_files/WindowsPLINK" #update with the path to PLINK on your computer
 BFILEpath<-"./data/processed/wild_standard_final"
 OUTPUTpath<-"./results/pca"
 
@@ -36,9 +40,10 @@ pca.data.wild.origins <- pca.data.wild.origins %>%
 wild_pca <- ggplot(pca.data.wild.origins, aes(x=V3,y=V4)) +  #plot with individual ID's and by origin
   geom_point(aes(shape = Pop, color = Pop), size = 3) +
   geom_rect(data = subset(pca.data.wild.origins, ID %in% c("E35M", "LO01F")),
-            aes(xmin = min(V3) - 0.02, xmax = max(V3) + 0.045,
-                ymin = min(V4) - 0.02, ymax = max(V4) + 0.04),
+            aes(xmin = min(V3) - 0.03, xmax = max(V3) + 0.045,
+                ymin = min(V4) - 0.03, ymax = max(V4) + 0.04),
             fill = NA, color = "black", linewidth = 1, linetype = "dashed") +
+  xlim(c(-0.16, 0.325))+
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("E32M")),  #in correct position
             aes(label=ID), vjust=1.1, hjust=-0.1, size=4, color = "#009E73") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("E29M")), #in correct position
@@ -46,7 +51,7 @@ wild_pca <- ggplot(pca.data.wild.origins, aes(x=V3,y=V4)) +  #plot with individu
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("LO03M")), #in correct position
             aes(label=ID), vjust=1.05, hjust=1.1, size=4, color = "#009E73") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("OM331")), #in correct position
-            aes(label=ID), vjust=1.05, hjust=1.08, size=4, color = "#009E73") + 
+            aes(label=ID), vjust=0.65, hjust=1.08, size=4, color = "#009E73") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("E35M")), #in correct position
             aes(label=ID), vjust=-0.5, hjust=-0.07, size=4, color = "#CC79A7") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("LO01F")), #in correct position
