@@ -275,7 +275,7 @@ normalized_roh <- population_category_counts %>%
   ungroup()
 write.csv(normalized_roh, "pop_normalized_roh.csv")
 
-####Visualizing ROH --karyotype plot --- individual plots working, need to find and update chromosome lengths -- email brian davis?
+####Visualizing ROH --karyotype plot --- individual plots working
 
 #make data frame for plotting
 plot_df <- data.frame(
@@ -345,16 +345,6 @@ roh_gr <- GRanges(
   nsnp = plot_df$nsnp,
   sample_id = plot_df$sample_id) #making hom file into grange
 
-######TROUBLESHOOT#######
-pop_gr <- GRanges( #### skipped for now
-  seqnames = plot_df$chr,
-  ranges = IRanges(start = plot_df$start, end = plot_df$end),
-  kb = plot_df$kb,
-  nsnp = plot_df$nsnp,
-  sample_id = plot_df$sample_id,
-  population_id = plot_df$pop_id)
-######end TOUBLESHOOT#######
-
 #####creating function for plotting -- individual
 plot_individual_roh <- function(sample_id, output_file = NULL) {
   # Filter ROH data for specific individual
@@ -377,6 +367,7 @@ plot_individual_roh <- function(sample_id, output_file = NULL) {
          border = "#FF0000",
          r0 = 0, r1 = 1,
          data.panel = "ideogram")
+ 
   # Close file if opened
   if (!is.null(output_file)) {
     dev.off()
@@ -385,66 +376,8 @@ plot_individual_roh <- function(sample_id, output_file = NULL) {
   return(individual_roh)
 }
 
-#####TROUBLESHOOT LATER######
-####function for plotting -- population wide   ~~~~###skipped for now - not updated
-plot_population_roh_smoothed <- function(population_id, output_file = NULL, window_size = 1e5, smooth = TRUE) {
-  # Subset to individuals from the desired population
-  pop_roh <- pop_gr[mcols(pop_gr)$population_id == population_id]
-  
-  if (length(pop_roh) == 0) {
-    message("No ROH data found for population: ", population_id)
-    return(NULL)
-  }
-  
-  # Optional output to file
-  if (!is.null(output_file)) {
-    pdf(output_file, width = 10, height = 7)
-  }
-  
-  # Plot karyotype
-  pop_kp <- plotKaryotype(genome = ocel_genome, plot.type = 2, main = paste("ROH Density for", population_id))
-  
-  # Calculate raw coverage (how many ROHs overlap each base)
-  roh_cov <- coverage(pop_roh)
-  
-  # Smooth and plot each chromosome
-  for (chr in names(roh_cov)) {
-    cov_vector <- as.numeric(roh_cov[[chr]])
-    
-    if (smooth) {
-      # Apply rolling mean smoothing (simple moving average)
-      kernel <- rep(1/window_size, window_size)
-      smoothed <- stats::filter(cov_vector, kernel, sides = 2, circular = FALSE)
-    } else {
-      smoothed <- cov_vector
-    }
-    
-    # Build GRanges object with smoothed values
-    pos <- IRanges(start = seq_along(smoothed), width = 1)
-    smoothed_gr <- GRanges(seqnames = chr, ranges = pos, score = smoothed)
-    
-    # Reduce resolution for plotting (optional)
-    smoothed_gr <- smoothed_gr[start(smoothed_gr) %% 1000 == 0]  # sample every 1kb
-    
-    # Plot line track
-    kpLines(pop_kp, chr = as.character(seqnames(smoothed_gr)), x = start(smoothed_gr), y = mcols(smoothed_gr)$score, col = "red", r0 = 0.5, r1 = 0.8)
-  }
-  
-  if (!is.null(output_file)) {
-    dev.off()
-  }
-  
-  invisible(NULL)
-}
-#######TROUBLESHOOT END######
-
 ##using the function -- plotting individual roh
 unique_samples <- unique(plot_df$sample_id)
-
-#######TROUBLESHOOT
-##using the function -- plotting population roh. ~~~~~##skipped for now, not updated
-unique_pops <- unique(mcols(pop_gr)$population_id)
-######TROUBLESHOOT END#######
 
 # Sanitize function to make safe filenames
 sanitize_filename <- function(name) {
@@ -463,14 +396,7 @@ for (sample_id in unique_samples) {
   plot_individual_roh(sample_id, output_file)
 }
 
-#####TROUBLESHOOT LATER#####
-#loop through to create output files ~~~~### skipped for now
-for (pop in unique_pops) {
-  safe_name <- sanitize_filename(pop)
-  output_file <- paste0("wild_roh_density_plots/pop_", safe_name, "_roh_density.pdf")
-  plot_population_roh_smoothed(population_id = pop, output_file = output_file)
-}
-dev.off()
+
 
 ###ROH single chrom plot
 #reading in data
@@ -487,7 +413,7 @@ chr4_df <- data.frame(
 #filtering dataframe for only chrome 4
 chr4plot<- chr4_df[chr4_df$chr == "4", ]
 
-#creating a custom genotype for karyoplotr for chrom 10 only
+#creating a custom genotype for karyoplotr for chrom 4 only
 feline_chr_sizes <- data.frame(
   chr = "chr4", 
   start = 1,
@@ -546,3 +472,28 @@ for (sample_id in unique_samples) {
   output_file <- paste0("roh_plot_chr4/", safe_id, "_chr4_roh_plot.pdf")
   chr_4_plot(sample_id, output_file)
 }
+
+#test
+w_kp <- plotKaryotype(genome = ocel_genome, plot.type = 1, main = paste("ROH on Chromosome 4 for", sample_id))
+#kpAddChromosomeNames(w_kp, srt = 45, cex = 0.8) #not using this line for now
+#plot individuals
+kpRect(w_kp, 
+       chr = as.character(seqnames(individual_roh)), 
+       x0 = start(individual_roh), 
+       x1 = end(individual_roh),
+       y0 = 0, 
+       y1 = 1, 
+       col = "#FF000080",  # Semi-transparent red
+       border = "#FF0000",
+       r0 = 0.05, r1 = 0.95,
+       data.panel = "ideogram") #should plot directly onto the ideogram
+kpAxis(ind_kp, ymin = 0, ymax= 1, data.panel="ideogram")
+kpAddBaseNumbers(w_kp, tick.dist = 10000000, tick.len = 10, tick.col="red", cex=1,
+                 minor.tick.dist = 1000000, minor.tick.len = 5, minor.tick.col = "gray")
+kpPoints(ind_kp, 
+         chr = as.character(seqnames(individual_roh)),
+         x=chr4$window_mid,
+         y=chr4$het_per_kb,
+         data.panel= "ideogram"
+)
+
