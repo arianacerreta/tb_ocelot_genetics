@@ -1,19 +1,19 @@
 #used bcftools to select roh, uses a HMM to select runs
-#code run in termainl is as follows:
-#within your bcftools directory
+#code run in terminal is as follows:
 
-export LDPRUNED_WILD="/c/Users/kualc095/OneDrive - Texas A&M University - Kingsville/Ocelots/LEPA_Manuscript1_Bostwick/tb_ocelot_genetics/data/processed/addtl_filter" #adjust path accordingly
+export LDPRUNED_WILD="./data/processed/addtl_filter" #should not need to change if in .Rproj root directory
+export BCFTOOLS="./path/bcftools-1.24/bin" #directory to your executable bcftools 
+
 #clean the header of the vcf for use in bcftools- removes a flag placed by plink that causes errors
-./bcftools view -h "${LDPRUNED_WILD}"/roh_LDpruned_05.vcf.gz | grep -v "##chrSet" > "${LDPRUNED_WILD}"/clean_header.txt
-./bcftools reheader -h "${LDPRUNED_WILD}"/clean_header.txt "${LDPRUNED_WILD}"/roh_LDpruned_05.vcf.gz -o "${LDPRUNED_WILD}"/clean_roh_LDpruned_05.vcf.gz
+"${BCFTOOLS}"/bcftools view -h "${LDPRUNED_WILD}"/roh_LDpruned_05.vcf.gz | grep -v "##chrSet" > "${LDPRUNED_WILD}"/clean_header.txt
+"${BCFTOOLS}"/bcftools reheader -h "${LDPRUNED_WILD}"/clean_header.txt "${LDPRUNED_WILD}"/roh_LDpruned_05.vcf.gz -o "${LDPRUNED_WILD}"/clean_roh_LDpruned_05.vcf.gz
 
-#skipping reheading
 #make dir for roh results
-export ROH_DIR="/c/Users/kualc095/OneDrive - Texas A&M University - Kingsville/Ocelots/LEPA_Manuscript1_Bostwick/tb_ocelot_genetics/results/roh"
-mkdir "$ROH_DIR"
+export ROH_DIR="./results/roh" #should not need to change if in .Rproj root directory
+mkdir -p "$ROH_DIR"
 
 #identify roh:
-./bcftools roh -G30 --estimate-AF - --rec-rate 1.1e-8 -Or -o "${ROH_DIR}"/roh_LD05.txt \
+"${BCFTOOLS}"/bcftools roh -G30 --estimate-AF - --rec-rate 1.1e-8 -Or -o "${ROH_DIR}"/roh_LD05.txt \
 "${LDPRUNED_WILD}"/clean_roh_LDpruned_05.vcf.gz
 #key changes, now estimates allele frequencies from data instead of using default, uses the domestic cat recombination rate
 #and is using LD pruned data to better fit model assumptions
