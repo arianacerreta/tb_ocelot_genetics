@@ -58,7 +58,9 @@ Bostwick, T.A., Cerreta, A.L., DeYoung, R.W., Smith, M.M., Martin A.M., Reeves, 
 
 Fork this repository to your computer. Download additional input files from [Zenodo](./data). Download [ocelot reference genome](https://ncbi.nlm.nih.gov/datasets/genome/GCA_058742865.1/). To recreate all intermediate files begin with [1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh) and follow throught the pipeline as listed below. To avoid long processing times in pre-processing steps, begin with intermediate file ```allInd_SNPs_autosomes_bi_gq9.vcf.gz```and [2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R). 
 
-*Most* paths are internally referenced within the code with notable exceptions being your path to bcftools, PLINK, ADMIXTURE, and original input files downloaded from Zenodo. Paths that will need to be updated are annotated within the code.
+*Most* paths are internally referenced within the code with notable exceptions 
+being your path to bcftools, PLINK, ADMIXTURE, and original input files downloaded 
+from Zenodo. Paths that will need to be updated are annotated within the code.
 
 Ariana: update Zenodo link once created
 
