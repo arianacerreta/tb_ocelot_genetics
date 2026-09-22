@@ -1,5 +1,4 @@
-## Genomic effects of rare gene flow between inbred populations of ocelots (*Leopardus pardalis*) 
-in the United States
+## Genomic effects of rare gene flow between inbred populations of ocelots (*Leopardus pardalis*) in the United States
 
 #### Bostwick, T.A., Cerreta, A.L., DeYoung, R.W., Smith, M.M., Martin A.M., Reeves, A.R., and L.S. Petracca
 
