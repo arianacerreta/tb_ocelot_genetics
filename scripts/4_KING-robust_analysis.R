@@ -1,4 +1,7 @@
 #Kinship analysis
+##Original author: Tyler Bostwick
+##Edits: Ariana Cerreta
+
 #library
 library(dplyr)
 library(ggplot2)
@@ -10,8 +13,7 @@ rm(list = ls())
 setwd("./data/processed/addtl_filter/")
 
 #Define paths
-##update with your path to PLINK and PLINK2
-PLINKpath<-"F:/2_TB_Working_Files/Plink_files/WindowsPLINK"
+PLINKpath<-"./path/Plink_files/WindowsPLINK"##update with your path to PLINK and PLINK2
 
 ##king-robust kinship estimator for WILD individuals 
 system(paste0(PLINKpath,"/plink2 --bfile wild_kin_roh_filter --make-king-table --allow-extra-chr --chr-set 17 --out wild_KING_manu"))
@@ -116,7 +118,7 @@ ggplot(data = new_ordered_matrix_king, aes(x=IID1, y=IID2, fill = KINSHIP)) +
   annotate("text", x = 33, y = 41, label = "Refuge" , size = 5)+
   annotate("rect", xmin=c(22.5), xmax=c(26.5), ymin=c(23.5), ymax=c(27.5),
            color = "black", fill = "transparent", size =0.75, linetype="solid" )+
-  annotate("text", x = 19.5, y = 28, label = "Dispersers" , size = 5)+
+  annotate("text", x = 19, y = 28, label = "Dispersers" , size = 5)+
   labs(x="Individuals", y="Individuals")+
   theme_minimal()+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
