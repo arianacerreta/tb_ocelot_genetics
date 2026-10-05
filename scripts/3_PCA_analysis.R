@@ -38,35 +38,38 @@ pca.data.wild.origins <- pca.data.wild.origins %>%
 
 #plotting
 wild_pca <- ggplot(pca.data.wild.origins, aes(x=V3,y=V4)) +  #plot with individual ID's and by origin
-  geom_point(aes(shape = Pop, color = Pop), size = 3) +
+  geom_point(aes(shape = Pop, color = Pop), size = 2.5, alpha = 0.65) +
   geom_rect(data = subset(pca.data.wild.origins, ID %in% c("E35M", "LO01F")),
-            aes(xmin = min(V3) - 0.03, xmax = max(V3) + 0.045,
+            aes(xmin = min(V3) - 0.03, xmax = max(V3) + 0.055,
                 ymin = min(V4) - 0.03, ymax = max(V4) + 0.04),
-            fill = NA, color = "black", linewidth = 1, linetype = "dashed") +
-  xlim(c(-0.16, 0.325))+
+            fill = NA, color = "black", linewidth = 0.75, linetype = "dashed") +
+  xlim(c(-0.18, 0.325))+
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("E32M")),  #in correct position
-            aes(label=ID), vjust=1.1, hjust=-0.1, size=4, color = "#009E73") + 
+            aes(label=ID), vjust=0.6, hjust=-0.18, size=2.5, color = "#004166") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("E29M")), #in correct position
-            aes(label=ID), vjust=-0.5, hjust=-0.07, size=4, color = "#009E73")+
+            aes(label=ID), vjust=0.7, hjust=1.15, size=2.5, color = "#004166")+
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("LO03M")), #in correct position
-            aes(label=ID), vjust=1.05, hjust=1.1, size=4, color = "#009E73") + 
+            aes(label=ID), vjust=0.5, hjust=1.15, size=2.5, color = "#004166") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("OM331")), #in correct position
-            aes(label=ID), vjust=0.65, hjust=1.08, size=4, color = "#009E73") + 
+            aes(label=ID), vjust=0.65, hjust=1.1, size=2.5, color = "#004166") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("E35M")), #in correct position
-            aes(label=ID), vjust=-0.5, hjust=-0.07, size=4, color = "#CC79A7") + 
+            aes(label=ID), vjust=-0.5, hjust=-0.07, size=2.5, color = "#8f3767") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("LO01F")), #in correct position
-            aes(label=ID), vjust=-0.5, hjust=-0.07, size=4, color = "#009E73") + 
-  scale_color_manual(name = "Current Population", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = "#009E73", "ranch" = "#CC79A7")) + #palette colors # & #8 from "Okabe-Ito" designed for color vision deficiencies
-  scale_shape_manual(name = "Current Population", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = 19, "ranch" = 17)) +
+            aes(label=ID), vjust=-0.5, hjust=-0.07, size=2.5, color = "#004166") + 
+  scale_color_manual(name = "Population", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = "#0072B2", "ranch" = "#CC79A7")) + #palette colors from "Okabe-Ito" designed for color vision deficiencies
+  scale_shape_manual(name = "Population", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = 19, "ranch" = 17)) +
   labs(x = paste0("PC1 (", pc1_variance, "%)"),
        y = paste0("PC2 (", pc2_variance, "%)")) +
   theme_minimal() +
   theme(
-    legend.title = element_text(size = 14),
-    legend.text = element_text(size = 12),
-    axis.title.x = element_text(size = 14),
-    axis.title.y = element_text(size = 14),
-    axis.text = element_text(size = 12)
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 8),
+    legend.position = c(0.98,0.98),
+    legend.justification = c("right", "top"),
+    legend.box.background = element_rect(color = "#e5e5e5", fill = "#f9f9f9", size = 0.5),
+    axis.title.x = element_text(size = 12),
+    axis.title.y = element_text(size = 12),
+    axis.text = element_text(size = 10)
   )
 wild_pca
 

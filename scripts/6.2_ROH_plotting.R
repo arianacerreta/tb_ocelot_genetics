@@ -82,7 +82,7 @@ ggplot() +
   geom_violin(data = wild_roh_pop, aes(x = pop, y = FROH, fill = pop), 
               alpha = 0.7) +
   # Add individual points
-  geom_jitter(data = wild_roh_pop, aes(x = pop, y = FROH), 
+  geom_jitter(data = wild_roh_pop, aes(x = pop, y = FROH), #consider seeing if height = 0 changes anything
               width = 0.1, alpha = 0.6, size = 3) +
   # Add population means with error bars
   geom_point(data = population_mean_roh, aes(x = pop, y = Average), 

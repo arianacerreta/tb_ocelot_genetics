@@ -45,6 +45,11 @@ dplyr_1.2.1
 
 ggplot2_4.0.3
 
+tidyr_1.3.2
+
+stringr_1.6.0
+
+forcats_1.0.1
 
 Additional Programs:
 
@@ -58,7 +63,7 @@ Additional Programs:
 
 ### Details of Article 
 
-Bostwick, T.A., Cerreta, A.L., DeYoung, R.W., Smith, M.M., Martin A.M., Reeves, A.R., and L.S. Petracca. 
+Bostwick, T.A., A.L. Cerreta, R.W. DeYoung, M.M. Smith, A.M. Martin, A.R. Reeves, and L.S. Petracca. 
 Genomic effects of rare gene flow between inbred populations of ocelots (*Leopardus pardalis*) in 
 the United States. In prep.
 

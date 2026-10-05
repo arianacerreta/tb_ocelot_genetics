@@ -1,0 +1,71 @@
+Fri Sep 25 22:54:46 2026: Running validation tests on input files
+Fri Sep 25 22:54:46 2026: Finished validating - Submitting job to queue
+Fri Sep 25 22:54:46 2026: Job 1790366083 started running.
+Fri Sep 25 22:54:46 2026: Job Parameters:
+Fri Sep 25 22:54:46 2026: Input file: forCLUMPAK.zip
+Fri Sep 25 22:54:46 2026: Input type: ADMIXTURE
+Fri Sep 25 22:54:46 2026: Admixture populations file: populations_file.txt
+Fri Sep 25 22:54:46 2026: CLUMPP search method: LargeKGreedy 
+Fri Sep 25 22:54:46 2026: MCL cluster size threshold: 0.1 (default)
+Fri Sep 25 22:54:46 2026: Extracting file: "forCLUMPAK.zip".
+Fri Sep 25 22:54:46 2026: Sorting input files by K
+Fri Sep 25 22:54:46 2026: Working on K=1
+Fri Sep 25 22:54:46 2026: calling ExtractIndTableFromStructureFiles
+Fri Sep 25 22:54:46 2026: calling ExtractIndTableFromStructureFiles
+Fri Sep 25 22:54:46 2026: Executing CLUMPP for K=1.
+Fri Sep 25 22:54:46 2026: Clustering K=1 with mcl.
+Fri Sep 25 22:54:46 2026: no cutoff was used
+Fri Sep 25 22:54:46 2026: Executing CLUMPP for major cluster.
+Fri Sep 25 22:54:46 2026: Working on K=2
+Fri Sep 25 22:54:46 2026: calling ExtractIndTableFromStructureFiles
+Fri Sep 25 22:54:46 2026: calling ExtractIndTableFromStructureFiles
+Fri Sep 25 22:54:46 2026: Executing CLUMPP for K=2.
+Fri Sep 25 22:54:46 2026: Clustering K=2 with mcl.
+Fri Sep 25 22:54:46 2026: no cutoff was used
+Fri Sep 25 22:54:46 2026: Executing CLUMPP for major cluster.
+Fri Sep 25 22:54:46 2026: Working on K=3
+Fri Sep 25 22:54:46 2026: calling ExtractIndTableFromStructureFiles
+Fri Sep 25 22:54:46 2026: calling ExtractIndTableFromStructureFiles
+Fri Sep 25 22:54:46 2026: Executing CLUMPP for K=3.
+Fri Sep 25 22:54:47 2026: Clustering K=3 with mcl.
+Fri Sep 25 22:54:47 2026: cutoff used: 0.75
+Fri Sep 25 22:54:47 2026: Executing CLUMPP for major cluster.
+Fri Sep 25 22:54:47 2026: Executing CLUMPP for minor clusters.
+Fri Sep 25 22:54:47 2026: Working on K=4
+Fri Sep 25 22:54:47 2026: calling ExtractIndTableFromStructureFiles
+Fri Sep 25 22:54:47 2026: calling ExtractIndTableFromStructureFiles
+Fri Sep 25 22:54:47 2026: Executing CLUMPP for K=4.
+Fri Sep 25 22:54:47 2026: Clustering K=4 with mcl.
+Fri Sep 25 22:54:47 2026: cutoff used: 0.74
+Fri Sep 25 22:54:47 2026: Executing CLUMPP for major cluster.
+Fri Sep 25 22:54:47 2026: Executing CLUMPP for minor clusters.
+Fri Sep 25 22:54:47 2026: Working on K=5
+Fri Sep 25 22:54:47 2026: calling ExtractIndTableFromStructureFiles
+Fri Sep 25 22:54:47 2026: calling ExtractIndTableFromStructureFiles
+Fri Sep 25 22:54:47 2026: Executing CLUMPP for K=5.
+Fri Sep 25 22:54:48 2026: Clustering K=5 with mcl.
+Fri Sep 25 22:54:48 2026: cutoff used: 0.61
+Fri Sep 25 22:54:48 2026: Executing CLUMPP for major cluster.
+Fri Sep 25 22:54:48 2026: Executing CLUMPP for minor clusters.
+Fri Sep 25 22:54:48 2026: Ordering clusters by size for K=1
+Fri Sep 25 22:54:48 2026: Calling distruct for K=1.MajorCluster
+Fri Sep 25 22:54:48 2026: Calculating best Average Distance between K=1 and K=2..
+Fri Sep 25 22:54:48 2026: Calling distruct for K=2.MajorCluster
+Fri Sep 25 22:54:49 2026: Calculating best Average Distance between K=2 and K=3..
+Fri Sep 25 22:54:49 2026: Calling distruct for K=3.MajorCluster
+Fri Sep 25 22:54:49 2026: Calculating best Average Distance between K=3 and K=4..
+Fri Sep 25 22:54:49 2026: Calling distruct for K=4.MajorCluster
+Fri Sep 25 22:54:49 2026: Calculating best Average Distance between K=4 and K=5..
+Fri Sep 25 22:54:49 2026: Calling distruct for K=5.MajorCluster
+Fri Sep 25 22:54:49 2026: Calculating best Average Distance between large cluster and K=3.MinorCluster1..
+Fri Sep 25 22:54:49 2026: Calling distruct for K=3.MinorCluster1
+Fri Sep 25 22:54:49 2026: Calculating best Average Distance between large cluster and K=3.MinorCluster2..
+Fri Sep 25 22:54:49 2026: Calling distruct for K=3.MinorCluster2
+Fri Sep 25 22:54:50 2026: Calculating best Average Distance between large cluster and K=4.MinorCluster1..
+Fri Sep 25 22:54:50 2026: Calling distruct for K=4.MinorCluster1
+Fri Sep 25 22:54:50 2026: Calculating best Average Distance between large cluster and K=4.MinorCluster2..
+Fri Sep 25 22:54:50 2026: Calling distruct for K=4.MinorCluster2
+Fri Sep 25 22:54:50 2026: Calculating best Average Distance between large cluster and K=5.MinorCluster1..
+Fri Sep 25 22:54:50 2026: Calling distruct for K=5.MinorCluster1
+Fri Sep 25 22:54:50 2026: Creating job summary PDF
+Fri Sep 25 22:54:50 2026: Creating job zip file

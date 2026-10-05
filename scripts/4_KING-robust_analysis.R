@@ -5,9 +5,10 @@
 #library
 library(dplyr)
 library(ggplot2)
+library(ggdraw)
 
 #clean your environment
-rm(list = ls())
+rm(list=setdiff(ls(),"wild_pca")) 
 
 #working directory
 setwd("./data/processed/addtl_filter/")
@@ -99,7 +100,7 @@ new_ordered_matrix_king<- new_ordered_matrix_king %>%
   mutate(IID2 = factor(IID2, levels = ordered_IID2)) #factor for proper axis order
 
 #heat map of kinship for wild individuals -- binned
-ggplot(data = new_ordered_matrix_king, aes(x=IID1, y=IID2, fill = KINSHIP)) +
+kinship_plot<-ggplot(data = new_ordered_matrix_king, aes(x=IID1, y=IID2, fill = KINSHIP)) +
   geom_tile(color="white") +
   scale_fill_stepsn(name = "Kinship", breaks = c(0, 0.04, 0.1, 0.2),
                     limit = c(0, 0.3),
@@ -109,26 +110,29 @@ ggplot(data = new_ordered_matrix_king, aes(x=IID1, y=IID2, fill = KINSHIP)) +
                     colors = c("grey100", "gold1", "orangered", "firebrick"),
                     )+
   annotate("rect", xmin=c(29.5,29.5), xmax=c(30.5,30.5), ymin=c(13.5, 25.5), ymax=c(14.5,26.5),
-          color = "black", fill = "transparent", size =1.5, linetype="solid" )+
+          color = "black", fill = "transparent", size =1, linetype="solid" )+
   annotate("rect", xmin=c(0.5), xmax=c(22.5), ymin=c(0.5), ymax=c(23.5),
-           color = "black", fill = "transparent", size =0.75, linetype="solid" )+
-  annotate("text", x = 8, y = 18, label = "Ranch" , size = 5)+
+           color = "black", fill = "transparent", size =0.5, linetype="solid" )+
+  annotate("text", x = 4.5, y = 21.5, label = "Ranch" , size = 4)+
   annotate("rect", xmin=c(26.5), xmax=c(43.5), ymin=c(27.5), ymax=c(43.5),
-           color = "black", fill = "transparent", size =0.75, linetype="solid" )+
-  annotate("text", x = 33, y = 41, label = "Refuge" , size = 5)+
+           color = "black", fill = "transparent", size =0.5, linetype="solid" )+
+  annotate("text", x = 31, y = 41.5, label = "Refuge" , size = 4)+
   annotate("rect", xmin=c(22.5), xmax=c(26.5), ymin=c(23.5), ymax=c(27.5),
-           color = "black", fill = "transparent", size =0.75, linetype="solid" )+
-  annotate("text", x = 19, y = 28, label = "Dispersers" , size = 5)+
-  labs(x="Individuals", y="Individuals")+
+           color = "black", fill = "transparent", size =0.5, linetype="solid" )+
+  annotate("text", x = 18, y = 28.5, label = "Dispersers" , size = 4)+
+  scale_y_discrete(position = "right")+
   theme_minimal()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-        axis.text.y = element_text(hjust = 1.25),
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12),
-        legend.text = element_text(vjust = -1))
+  theme(legend.position = c(0.01,0.95),
+        legend.justification = c("left", "top"),
+        legend.box.background = element_rect(color = "#e5e5e5", fill = "#f9f9f9", size = 0.5),
+        legend.key.size = unit(3, "mm"),
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 6, color = "black"),
+        axis.text.y = element_text(hjust = 0, size = 6, color = "black"),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        legend.text = element_text(vjust = -0.5, hjust = 0, size = 7))
 
 ggsave("../../../figures/king_robust_heatmap.pdf", dpi = 1200)
-setwd("~")
 
 #reset directory back to project directory
 setwd("../../..")
