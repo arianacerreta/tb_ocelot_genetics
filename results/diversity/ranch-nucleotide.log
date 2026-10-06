@@ -1,0 +1,15 @@
+
+VCFtools - 0.1.18
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf [stdin]
+	--out ./results/diversity/ranch-nucleotide
+	--window-pi 50000
+
+Warning: Expected at least 2 parts in INFO entry: ID=PR,Number=0,Type=Flag,Description="Provisional reference allele, may not be based on real reference genome">
+After filtering, kept 23 out of 23 Individuals
+Outputting Windowed Nucleotide Diversity Statistics...
+Calculating Windowed Nucleotide Diversity without a mask can give misleading results. It is recommended you use a mask to define well characterized sites in the genome.
+After filtering, kept 444711 out of a possible 444711 Sites
+Run Time = 7.00 seconds

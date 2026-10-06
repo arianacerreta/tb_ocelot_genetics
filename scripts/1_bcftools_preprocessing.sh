@@ -55,3 +55,29 @@ export OUTPUT_FOLDER="/path/file/write/directory" #where all the files created f
 ####Optional Check####
 "${BCFTOOLS}"/bcftools index "${OUTPUT_FOLDER}"/allInd_SNPs_autosomes_bi_gq9.vcf.gz
 "${BCFTOOLS}"/bcftools index -n "${OUTPUT_FOLDER}"/allInd_SNPs_autosomes_bi_gq9.vcf.gz #should be 2,950,351
+
+####coverage stats from bcftools####
+"${BCFTOOLS}"/bcftools stats "${OUTPUT_FOLDER}"/joint_call_autosomes_NCBIchrom.vcf.gz | grep "^SN"
+        #gives summary stats on the vcf file
+        #output:
+        #SN	0	number of samples:	89
+        #SN	0	number of records:	120040661 -- total number of sites
+        #SN	0	number of no-ALTs:	0 -- rows with no alt allele, essentially uninformative rows
+        #SN	0	number of SNPs:	101914847 -- total number of snps
+        #SN	0	number of MNPs:	0 -- total of multi-nucleotide polys
+        #SN	0	number of indels:	20246516 -- total number of indels (need to remove)
+        #SN	0	number of others:	0 -- anything else
+        #SN	0	number of multiallelic sites:	12342780 -- sites with more than two alleles
+        #SN	0	number of multiallelic SNP sites:	1673221 -- number of multiallelic sites that are snps
+#after removing all indels and only keeping biallelic sites and filtering for gq9 -- total snps left is 2,950,351
+
+#using filtered to only biallelic sites and gq9: allInd_SNPs_autosomes_bi_gq9.vcf.gz
+#computing mean coverage depth across sites, code queries the vcf for the depth at each site, the performs a pipe that calculates mean
+"${BCFTOOLS}"/bcftools query -f '[%DP\n]' "${OUTPUT_FOLDER}"/allInd_SNPs_autosomes_bi_gq9.vcf.gz | awk '{sum+=$1; n++} END {print "Mean per-individual depth:", sum/n}'
+      #output: Mean per-individual depth: 12.6093
+#computing mean and standard deviation bounds for use in determining the depth filter:
+"${BCFTOOLS}"/bcftools query -f '[%DP\n]' "${OUTPUT_FOLDER}"/allInd_SNPs_autosomes_bi_gq9.vcf.gz | awk '$1 > 0 {sum+=$1; sumsq+=$1*$1; n++} END {mean=sum/n; sd=sqrt(sumsq/n - mean^2); print "Mean:", mean; print "SD:", sd; print "Mean - 2SD:", mean-2*sd; print "Mean + 2SD:", mean+2*sd}'
+      #output: Mean: 12.6093
+              #SD: 5.60941
+              #Mean - 2SD: 1.3905
+              #Mean + 2SD: 23.8282

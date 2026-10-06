@@ -51,6 +51,8 @@ stringr_1.6.0
 
 forcats_1.0.1
 
+cowplot_1.2.0
+
 Additional Programs:
 
 [bcftools](https://samtools.github.io/bcftools/howtos/index.html) v1.24

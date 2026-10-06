@@ -5,4 +5,5 @@
 *.jpg
 *.docx
 data/processed
+results/admixture
 /not_public/
