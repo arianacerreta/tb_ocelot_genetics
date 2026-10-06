@@ -1,6 +1,6 @@
 ## Genomic effects of rare gene flow between inbred populations of ocelots (*Leopardus pardalis*) in the United States
 
-#### Bostwick, T.A., Cerreta, A.L., DeYoung, R.W., Smith, M.M., Martin A.M., Reeves, A.R., and L.S. Petracca
+#### T. A. Bostwick, A. L. Cerreta, R. W. DeYoung, M. M. Smith, L. Caua, B. Davis, J. Janecka, A. M. Martin, A. R. Reeves, M. E. Tewes, and L. S. Petracca. 
 
 ##### Please contact the first author for questions about the code or data: Tyler Bostwick (add email)
 ##### Secondary contact: Lisanne Petracca (Lisanne.Petracca@tamuk.edu)
@@ -31,11 +31,12 @@ NOTE: Ariana fix Zenodo link once data files uploaded
 
 ### [Results](./results)
 
-Contains raw and processed results.  
+Contains most results. Admixture results are not pushed to the GitHub repo. They 
+should be generated to your local directories using the scripts.
 
 ### [Figures](./figures)
 
-Contains pdf versions of all figures in manuscript. 
+Contains pdf versions of all figures in manuscript or supplementals. 
 
 ### Required Packages, Programs, and Versions Used 
 
@@ -63,9 +64,12 @@ Additional Programs:
 
 [ADMIXTURE](https://dalexander.github.io/admixture/) v1.3.0
 
+[vcftools](https://vcftools.github.io/man_latest.html) v0.1.17
+
 ### Details of Article 
 
-Bostwick, T.A., A.L. Cerreta, R.W. DeYoung, M.M. Smith, A.M. Martin, A.R. Reeves, and L.S. Petracca. 
+Bostwick, T. A., A. L. Cerreta, R. W. DeYoung, M. M. Smith, L. Caua, B. Davis, 
+J. Janecka, A. M. Martin, A. R. Reeves, M. E. Tewes, and L. S. Petracca. 
 Genomic effects of rare gene flow between inbred populations of ocelots (*Leopardus pardalis*) in 
 the United States. In prep.
 
@@ -78,8 +82,8 @@ and follow through the pipeline as listed below. To avoid long processing times
 in pre-processing steps, begin with intermediate file ```allInd_SNPs_autosomes_bi_gq9.vcf.gz```and [2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R). 
 
 *Most* paths are internally referenced within the code with notable exceptions 
-being your path to bcftools, PLINK, ADMIXTURE, and original input files downloaded 
-from Zenodo. Paths that will need to be updated are annotated within the code.
+being your path to bcftools, PLINK, ADMIXTURE, vcftools, and original input files downloaded 
+from Zenodo. Paths that will need to be updated are annotated within the code or are indicated with ```/path/```.
 
 Ariana: update Zenodo link once created
 
@@ -95,26 +99,34 @@ Ariana: update Zenodo link once created
 
 #### Analyses
 
-[3_PCA_analysis.R](./scripts/3_PCA_analysis.R)
+[3.1_bcftools_het.sh](./scripts/3.1_bcftools_het.sh)
+
+-calculates individual heterozygosity, π, F with bcftools
+
+[3.2_diversity_stats_plotting.R](./scripts/3.2_diversity_stats_plotting.R)
+
+-uses outputs from ```3.1_bcftools_het.sh``` to summarize and plot data
+
+[4_PCA_analysis.R](./scripts/4_PCA_analysis.R)
 
 - perform PCA on wild ocelots and plot
 
-[4_KING-robust_analysis.R](./scripts/4_KING-robust_analysis.R)
+[5_KING-robust_analysis.R](./scripts/5_KING-robust_analysis.R)
 
 - calls PLINK2 to calculate KING-robust kinship estimator for WILD individuals and plots
 
-[5.1_admixture_analysis.sh](./scripts/5.1_admixture_analysis.sh)
+[6.1_admixture_analysis.sh](./scripts/6.1_admixture_analysis.sh)
 
 - calls and runs ADMIXTURE
 
-[5.2_admixture_plotting.R](./scripts/5.2_admixture_plotting.R)
+[6.2_admixture_plotting.R](./scripts/6.2_admixture_plotting.R)
 
 - reads in data from ADMIXTURE runs for plotting
 
-[6.1_ROH_bcftools.sh](./scripts/6.1_ROH_bcftools.sh)
+[7.1_ROH_bcftools.sh](./scripts/7.1_ROH_bcftools.sh)
 
 - calls bcftools to perform ROH analysis
 
-[6.2_ROH_plotting.R](./scripts/6.2_ROH_plotting.R)
+[7.2_ROH_plotting.R](./scripts/6.2_ROH_plotting.R)
 
 - plots results from ROH analysis
