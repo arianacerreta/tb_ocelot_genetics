@@ -101,11 +101,11 @@ Ariana: update Zenodo link once created
 
 [3.1_bcftools_het.sh](./scripts/3.1_bcftools_het.sh)
 
--calculates individual heterozygosity, π, F with bcftools
+- calculates individual heterozygosity, π, F with bcftools
 
 [3.2_diversity_stats_plotting.R](./scripts/3.2_diversity_stats_plotting.R)
 
--uses outputs from ```3.1_bcftools_het.sh``` to summarize and plot data
+- uses outputs from ```3.1_bcftools_het.sh``` to summarize and plot data
 
 [4_PCA_analysis.R](./scripts/4_PCA_analysis.R)
 
@@ -127,6 +127,6 @@ Ariana: update Zenodo link once created
 
 - calls bcftools to perform ROH analysis
 
-[7.2_ROH_plotting.R](./scripts/6.2_ROH_plotting.R)
+[7.2_ROH_plotting.R](./scripts/7.2_ROH_plotting.R)
 
 - plots results from ROH analysis

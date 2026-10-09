@@ -5,13 +5,16 @@ setwd("./results/roh")
 #clean your environment
 rm(list = ls())
 
+library(data.table)
+
 #libraries
 library(dplyr)
 library(ggplot2)
 library(scales)
 library(cowplot)
 library(gridGraphics)
-
+library(qpdf)
+library(stringr)
 ##for karyotype plots
 install.packages(c("karyoploteR", "regioneR", "GenomicRanges", "data.table", "IRanges", "GenomicAlignments"))
 BiocManager::install("karyoploteR")
@@ -63,12 +66,35 @@ wild_roh_pop<-wild_roh_pop%>%
     pop == "refuge" ~ "Refuge",
     pop == "ranch" ~ "Ranch",
     TRUE ~ pop
-  ))
+  ))%>%
+  mutate(sample = gsub("-.*", "", sample))
+
+#add in heterozygosity for each individual
+#obs_het with same filtering as for Roh calculations 
+pop_het_fis<-read.csv("../diversity/pop_het_fis_rohfilt.csv", header = TRUE)
+
+wild_roh_pop<-wild_roh_pop%>%
+  left_join(pop_het_fis, by = c("sample" = "INDV"))
+
+FROHvHet<-ggplot(data = wild_roh_pop, aes(x = O_het, y = FROH, color = pop.x))+
+  geom_point()+
+  theme_minimal() +
+  labs(x = "Observed heterozygosity", y = expression(F[ROH] ("%")), color = "Population")+
+  scale_color_manual(values = c("Ranch" = "#CC79A7", "Refuge" = "#0072B2"))+
+  theme(legend.title = element_text(size = 11),
+        legend.text = element_text(size = 10),
+        legend.position = c(0.70,0.98),
+        legend.justification = c("left", "top"),
+        legend.box.background = element_rect(color = "#e5e5e5", fill = "#f9f9f9", linewidth = 0.5),
+        axis.text.x = element_text(size = 10, color = "black"),
+        axis.text.y = element_text(size = 10, color = "black"),
+        axis.title = element_text(size = 11),
+        )
 
 ####ROH assessment
 #average % genome in roh by population
 population_mean_roh <- wild_roh_pop %>%
-  group_by(pop) %>%
+  group_by(pop.x) %>%
   summarise(Average = mean(FROH, na.rm = TRUE),
             Count = n(),
             StdDev = sd(FROH, na.rm = TRUE),
@@ -79,19 +105,20 @@ write.csv(population_mean_roh, "population_mean_froh_table.csv")
 #violin plot of wild FROH
 ggplot() +
   # violin plot
-  geom_violin(data = wild_roh_pop, aes(x = pop, y = FROH, fill = pop), 
+  geom_violin(data = wild_roh_pop, aes(x = pop.x, y = FROH, fill = pop.x), 
               alpha = 0.7) +
-  # Add individual points
-  geom_jitter(data = wild_roh_pop, aes(x = pop, y = FROH), #consider seeing if height = 0 changes anything
-              width = 0.1, alpha = 0.6, size = 3) +
   # Add population means with error bars
-  geom_point(data = population_mean_roh, aes(x = pop, y = Average), 
+  geom_point(data = population_mean_roh, aes(x = pop.x, y = Average), 
              color = "black", size = 4, shape = 18) +
   geom_errorbar(data = population_mean_roh, 
-                aes(x = pop, y = Average, 
+                aes(x = pop.x, y = Average, 
                     ymin = Average - 1*StdDev, ymax = Average + 1*StdDev), #updated to 1SD per comments-ALC9/9/2026
                 color = "black", width = 0.2, size = 1) +
-  scale_fill_manual(values = c("Ranch" = "#CC79A7", "Refuge" = "#009E73")) +
+  scale_fill_manual(values = c("Ranch" = "#CC79A7", "Refuge" = "#0072B2")) +
+  # Add individual points
+  geom_jitter(data = wild_roh_pop, aes(x = pop.x, y = FROH), #consider seeing if height = 0 changes anything
+              width = 0.15, height = 0, alpha = 0.4, size = 3) +
+  
   # Labels and theme
   labs(x = "Population", y = expression(F[ROH] ("%"))) +
   theme_minimal() +
@@ -101,7 +128,7 @@ ggplot() +
         plot.title = element_text(size = 16, hjust = 0.5),
         legend.position = "none")
 
-ggsave("../../figures/wild_roh_violin_plot.pdf", dpi = 1200)
+ggsave("../../figures/wild_roh_violin_plot.pdf", dpi = 1200) #change to .pdf for pdf; .png for png
 
 ####proportion of ROH lengths
 #read in .hom files
@@ -147,8 +174,8 @@ ind_roh_summary <- roh_seg_df %>%
     total_length = sum(length_bp),
   )
 ind_roh_summary$FROH <- (ind_roh_summary$total_length / 2468705656) * 100 #updated number of bases to reflect ocelot scaffold primary assembly length (bp) Foley et al. 2026
-sum(ind_roh_summary$Count)
-mean(roh_seg_df$length_KB)
+sum(ind_roh_summary$Count) #2177
+mean(roh_seg_df$length_KB) #11302.36
 
 ind_bin_summary <- roh_seg_df %>% 
   summarize(.by = c(sample, Category),
@@ -220,32 +247,43 @@ p<-ggplot(gen_plot_df, aes(x = gen_bins, fill = pop)) +
     fill = "Populations"
   ) +
   theme_minimal() +
-  scale_fill_manual(values = c("ranch" = "#CC79A7", "refuge" = "#009E73"),
+  scale_fill_manual(values = c("ranch" = "#CC79A7", "refuge" = "#0072B2"),
                     labels = c("ranch" = "Ranch", "refuge" = "Refuge")) +
   theme(
-    axis.text.x = element_text(size = 14, color = "black"),
-    axis.text.y = element_text(size = 14, color = "black"),
-    axis.title.x = element_text(size = 16, vjust = -10),
-    axis.title.y = element_text(size = 16),
-    legend.title = element_text(size = 16),
-    legend.text = element_text(size = 14),
-    plot.margin = margin(b= 2, unit = "cm")
+    axis.text.x = element_text(size = 10, color = "black"),
+    axis.text.y = element_text(size = 10, color = "black"),
+    axis.title.x = element_text(size = 11, vjust = -6),
+    axis.title.y = element_text(size = 11),
+    legend.title = element_text(size = 11),
+    legend.text = element_text(size = 10),
+    legend.box.background = element_rect(color = "#e5e5e5", fill = "#f9f9f9", size = 0.5),
+    legend.position = c(0.98,0.98),
+    legend.justification = c("right", "top"),
+    plot.margin = margin(b= 1.5, t = 0.5,l = 0.7, unit = "cm")
   )
 
-ggdraw(p)+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[1],")"), x = 0.8, y = 0.13, size = 11, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[2],")"), x = 0.705, y = 0.13, size = 11, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[3],")"), x = 0.605, y = 0.13, size = 11, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[4],")"), x = 0.51, y = 0.13, size = 11, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[5],")"), x = 0.415, y = 0.13, size = 11, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[6],")"), x = 0.315, y = 0.13, size = 11, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[7],")"), x = 0.22, y = 0.13, size = 11, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[8],")"), x = 0.12, y = 0.13, size = 11, color = "black")+
-  draw_label("(ROH length in Mb)", x = 0.465, y = 0.022, size = 13, color = "black")
+exp_gen<-ggdraw(p)+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[1],")"), x = 0.932, y = 0.23, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[2],")"), x = 0.824, y = 0.23, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[3],")"), x = 0.713, y = 0.23, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[4],")"), x = 0.602, y = 0.23, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[5],")"), x = 0.493, y = 0.23, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[6],")"), x = 0.381, y = 0.23, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[7],")"), x = 0.270, y = 0.23, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[8],")"), x = 0.162, y = 0.23, size = 6, color = "black")+
+  draw_label("(ROH length in Mb)", x = 0.55, y = 0.09, size = 8, color = "black")
 
-#summary by population 
+ 
+#new Categories for Table 2
+roh_seg_df$Category2 <- cut(roh_seg_df$length_MB,
+                           breaks = c(0, 1, 2, 4, 6, 8, 10, 20, 30, 40, 50, 60, 70, 80, Inf),
+                           labels = c("<1Mb", "1-2Mb", "2-4Mb", "4-6Mb", "6-8Mb", "8-10MB", "10-20Mb",
+                                      "20Mb-30Mb", "30Mb-40Mb", "40Mb-50Mb", "50Mb-60Mb", "60Mb-70Mb",
+                                      "70Mb-80Mb", ">80Mb"),
+                         include.lowest = TRUE)
+#summary by population  
 population_category_counts <- roh_seg_df %>%
-  group_by(pop, Category)  %>%
+  group_by(pop, Category2)  %>%
   summarise(Count = n(), Total_Length_MB = sum(length_MB), .groups = "drop")
 
 #proportion by population
@@ -269,12 +307,13 @@ normalized_roh <- population_category_counts %>%
     Proportion_Length = Total_Length_MB / sum(Total_Length_MB),
     
     # Per-individual normalized metrics
-    Avg_ROH_Count_Per_Individual = Count / n_individuals,
-    Avg_ROH_Length_MB_Per_Individual = Total_Length_MB / n_individuals
+    Avg_ROH_Count_Per_Individual = round((Count / n_individuals), digits = 2),
+    Avg_ROH_Length_MB_Per_Individual = round((Total_Length_MB / n_individuals), digits = 2)
   ) %>%
   ungroup()
 write.csv(normalized_roh, "pop_normalized_roh.csv")
 
+##################################################################
 ####Visualizing ROH --karyotype plot --- individual plots working
 
 #make data frame for plotting
@@ -395,8 +434,13 @@ for (sample_id in unique_samples) {
   output_file <- paste0("wild_roh_plots/", safe_id, "_roh_plot.pdf")
   plot_individual_roh(sample_id, output_file)
 }
+files<-list.files("./wild_roh_plots/")
+files_w_path<-rep(paste0("./wild_roh_plots/",files))
 
+pdf_combine(input = files_w_path, output = "./wild_roh_plots/all_indiv_roh_plots.pdf")
 
+#clean enviornment of all but the plots needed to combine at end
+rm(list=setdiff(ls(),c("FROHvHet", "exp_gen")))
 
 ###ROH single chrom plot
 #reading in data
@@ -417,7 +461,8 @@ chr4plot<- chr4_df[chr4_df$chr == "4", ]
 feline_chr_sizes <- data.frame(
   chr = "chr4", 
   start = 1,
-  end = 207231548  # chr4 length only
+  end = 207231548  # chr4 length only 
+
 ) 
 feline_genome_gr <- GRanges(seqnames = feline_chr_sizes$chr, ranges = IRanges(start = feline_chr_sizes$start, end = feline_chr_sizes$end)) #make into grange object
 ocel_genome <- feline_genome_gr #making the custom plot type
@@ -472,28 +517,258 @@ for (sample_id in unique_samples) {
   output_file <- paste0("roh_plot_chr4/", safe_id, "_chr4_roh_plot.pdf")
   chr_4_plot(sample_id, output_file)
 }
+files<-list.files("./roh_plot_chr4/")
+files_w_path<-rep(paste0("./roh_plot_chr4/",files))
 
-#test
-w_kp <- plotKaryotype(genome = ocel_genome, plot.type = 1, main = paste("ROH on Chromosome 4 for", sample_id))
-#kpAddChromosomeNames(w_kp, srt = 45, cex = 0.8) #not using this line for now
-#plot individuals
+pdf_combine(input = files_w_path, output = "./roh_plot_chr4/all_indiv_chr4_roh_plots.pdf")
+
+#plotting for Figure 3
+#creating a custom genotype for karyoploter for chrom 4 only
+#I have to duplicate chr4 for the total number of individuals I want to
+feline_chr_sizes <- data.frame(
+  chr = c("LO01F", "LO03M", "OM283", "OF304", "E14F", "E33M"),
+  start = rep(1,6),
+  end = rep(207231548,6)  # chr4 length only
+) 
+feline_genome_gr <- GRanges(seqnames = feline_chr_sizes$chr, ranges = IRanges(start = feline_chr_sizes$start, end = feline_chr_sizes$end)) #make into grange object
+ocel_genome <- feline_genome_gr #making the custom plot type
+seqlevels(ocel_genome) <- feline_chr_sizes$chr
+seqlengths(ocel_genome) <- feline_chr_sizes$end
+
+#making hom file into a granges file
+chr4plot<-chr4plot %>%
+  mutate(sample_id = gsub("-.*", "", sample_id))
+chr4_gr <- GRanges(
+  seqnames = paste0(chr4plot$sample_id),
+  ranges = IRanges(start = chr4plot$start, end = chr4plot$end),
+  kb = chr4plot$kb,
+  nsnp = chr4plot$nsnp,
+  sample_id = chr4plot$sample_id)
+
+#######
+#calculate windowed heterozygosity (code pulled from Matt Smith)
+# Set parameters
+window_size <- 1e6             # 1 Mb
+step_size <- window_size       # non-overlapping
+low_het_threshold <- 0.005     # cutoff for low het
+
+# Define chromosome order (adjust to match your labeling scheme if needed)
+chr_order <- c(1:17)
+
+# Read in PLINK raw file (genotype: 0=homo1, 1=het, 2=homo2)
+geno <- fread("../../data/processed/addtl_filter/roh_LDpruned_05_data_allele.raw", header = TRUE) # Use fread to handle large tables
+geno_data <- geno %>% select(-FID, -PAT, -MAT, -SEX, -PHENOTYPE)
+
+# Extract SNP metadata (assumes format like chr:pos for SNP names)
+snp_info <- data.frame(snp = colnames(geno_data)[-1], stringsAsFactors = FALSE) %>%
+  mutate(chr = str_split_i(snp, "_", 1), pos = as.integer(str_split_i(snp, "_",2)))
+
+# Ensure chromosome ordering is preserved
+snp_info$chr <- factor(snp_info$chr, levels = chr_order)
+
+# Genotype matrix to long format
+geno_long <- geno_data %>%
+  dplyr::rename(individual = IID) %>%
+  tidyr::pivot_longer(
+    cols = -individual,
+    names_to = "snp",
+    values_to = "geno"
+  ) %>%
+  left_join(snp_info, by = "snp")
+
+# Remove large dataframes
+rm(geno); rm(geno_data)
+
+# Filter out SNPs with no position info
+geno_long <- geno_long %>% filter(!is.na(pos))
+
+#filter to chr4 to figure out what is going on
+geno_long_chr4<- geno_long %>% filter(chr =="4")
+max(geno_long_chr4$pos) #207,193,806
+
+# Calculate windowed heterozygosity by individual and chromosome
+windowed_het <- data.frame()
+
+for (indiv in unique(geno_long$individual)) {
+  indiv_data <- geno_long %>% filter(individual == indiv)
+  
+  for (chr in levels(snp_info$chr)) {
+    chr_data <- indiv_data %>% filter(chr == !!chr)
+    if (nrow(chr_data) == 0) next
+    
+    max_pos <- max(chr_data$pos, na.rm = TRUE)
+    starts <- seq(0, max_pos, by = step_size)
+    
+    for (start in starts) {
+      end <- start + window_size
+      window <- chr_data %>% filter(pos >= start & pos < end)
+      window_geno <- window$geno
+      n_het <- sum(window_geno == 1, na.rm = TRUE)
+      n_snps <- sum(!is.na(window_geno))
+      het_per_kb <- n_het / (window_size / 1000)
+      het_per_snp <- ifelse(n_snps > 0, n_het / n_snps, NA)
+      
+      windowed_het <- rbind(windowed_het, data.frame(
+        individual = indiv,
+        chr = chr,
+        window_start = start,
+        window_end = end,
+        window_mid = start + window_size / 2,
+        n_het = n_het,
+        n_snps = n_snps,
+        het_per_kb = het_per_kb,
+        het_per_snp = het_per_snp
+      ))
+    }
+  }
+}
+
+# Set chromosome as factor with defined order
+windowed_het$chr <- factor(windowed_het$chr, levels = chr_order)
+
+#clean individual names
+windowed_het<-windowed_het %>%
+  mutate(individual = gsub("-.*", "", individual))
+
+# Compute average across individuals
+windowed_het_avg <- windowed_het %>%
+  group_by(chr, window_mid) %>%
+  summarise(
+    mean_het_per_kb = mean(het_per_kb, na.rm = TRUE),
+    mean_het_per_snp = mean(het_per_snp, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Add cumulative genome position for plotting
+chr_info <- windowed_het %>%
+  group_by(chr) %>%
+  summarise(chr_len = max(window_end), .groups = "drop") %>%
+  mutate(chr_start = cumsum(lag(chr_len, default = 0)))
+
+windowed_het <- windowed_het %>%
+  left_join(chr_info, by = "chr") %>%
+  mutate(cum_pos = window_mid + chr_start)
+
+windowed_het_avg <- windowed_het_avg %>%
+  left_join(chr_info, by = "chr") %>%
+  mutate(cum_pos = window_mid + chr_start)
+
+chr_midpoints <- chr_info %>% mutate(mid = chr_start + chr_len / 2)
+
+#filter to only Chr4
+windowed_het_chr4<-windowed_het %>%
+  filter(chr == "4")
+LO01F<-windowed_het_chr4 %>%
+  filter(individual == "LO01F")
+
+saveRDS(windowed_het, file = "windowed_het.RDS")
+
+#read in RDS if needed
+windowed_het<-readRDS(file = "windowed_het.RDS")
+#make a GRange object
+het_points <- GRanges(
+  seqnames = paste0(windowed_het_chr4$individual), #since this is all chr4; hacking this line for individual labels
+  ranges = IRanges(start = windowed_het_chr4$window_mid, width = rep(1,length(windowed_het_chr4$window_mid))),
+  het= windowed_het_chr4$het_per_snp,#heterozygous sites in a window/called SNP positions in a window; ala Saremi et al 2019 Supplemental Methods
+  sample_id = windowed_het_chr4$individual)
+
+#LO01F-1,LO03M-1,OM283-2 (big ROH),LAO03M-1 (big ROH), OF304-1A (little ROH), E33M-1 (little ROH), E14F-1 (big ROH)
+sample_id<-c("LO01F","LO03M", "OM283", "OF304", "E14F", "E33M") #ranch
+individual_roh <- chr4_gr[mcols(chr4_gr)$sample_id %in% sample_id]
+#"ranch" = "#CC79A7", "refuge" = "#0072B2"
+color_ref<-matrix(data = NA, ncol = 3, nrow = length(individual_roh@seqnames@values))
+colnames(color_ref)<-c("sample_id", "seg", "color")
+color_ref<-as.data.frame(color_ref)
+color_ref$sample_id<-paste0(individual_roh@seqnames@values)
+color_ref$seg<-individual_roh@seqnames@lengths
+color_ref$color<-c("#CC79A7","#CC79A7","#0072B2", "#0072B2", "#0072B2","#0072B2")
+colors<-rep(color_ref$color, color_ref$seg)
+
+params<-getDefaultPlotParams(6)
+params$topmargin<-1
+params$bottommargin<-3
+params$ideogramheight<-5
+params$dataideogrammax<-1
+params$data1outmargin<-0
+params$data2outmargin<-2
+params$leftmargin<-0.15
+
+#start plot
+w_kp <- plotKaryotype(genome = ocel_genome, chromosomes = "all",
+                      plot.params = params,
+                      plot.type = 6,
+                      cex = 0.5
+                      )
+kpDataBackground(w_kp,data.panel = "ideogram", color = "white", r0=0.0, r1=0.98, clipping = FALSE)
+
 kpRect(w_kp, 
        chr = as.character(seqnames(individual_roh)), 
        x0 = start(individual_roh), 
        x1 = end(individual_roh),
        y0 = 0, 
        y1 = 1, 
-       col = "#FF000080",  # Semi-transparent red
-       border = "#FF0000",
-       r0 = 0.05, r1 = 0.95,
+       col = colors, 
+       border = "black",
+       r0 = 0.00, r1 = 1,
        data.panel = "ideogram") #should plot directly onto the ideogram
-kpAxis(ind_kp, ymin = 0, ymax= 1, data.panel="ideogram")
-kpAddBaseNumbers(w_kp, tick.dist = 10000000, tick.len = 10, tick.col="red", cex=1,
-                 minor.tick.dist = 1000000, minor.tick.len = 5, minor.tick.col = "gray")
-kpPoints(ind_kp, 
-         chr = as.character(seqnames(individual_roh)),
-         x=chr4$window_mid,
-         y=chr4$het_per_kb,
-         data.panel= "ideogram"
-)
+kpAddBaseNumbers(w_kp, tick.dist = 100000000, tick.len = 0.5, tick.col="black", cex=0.5,
+                 minor.tick.dist = 10000000, minor.tick.len = 0, minor.tick.col = "black")
 
+kpAxis(w_kp, ymin = 0, ymax= 1, cex = 0.6,data.panel="ideogram")
+
+kpPoints(w_kp, 
+         data=het_points,
+         y=het_points$het,
+         data.panel= "ideogram",
+         cex =0.4
+)
+#end plot
+kary<-recordPlot()
+
+kary_labelled<-ggdraw(kary)+
+  draw_label("Position on Chr 4 (Mb)", x = 0.55, y = 0.05, size = 11, color = "black")+
+  draw_line(x=c(0.075,0.075), y=c(0,1), color = "white", size = 20)+
+  draw_line(x=c(0,1), y=c(0.24,0.24), color = "white", size = 3)+
+  draw_line(x=c(0,1), y=c(0.39,0.39), color = "white", size = 3)+
+  draw_line(x=c(0,1), y=c(0.54,0.54), color = "white", size = 3)+
+  draw_line(x=c(0,1), y=c(0.69,0.69), color = "white", size = 3)+
+  draw_line(x=c(0,1), y=c(0.84,0.84), color = "white", size = 3)+
+  draw_label("1", x=0.135, y=0.976, color = "black", size = 6)+
+  draw_label("1", x=0.135, y=0.826, color = "black", size = 6)+
+  draw_label("1", x=0.135, y=0.676, color = "black", size = 6)+
+  draw_label("1", x=0.135, y=0.526, color = "black", size = 6)+
+  draw_label("1", x=0.135, y=0.374, color = "black", size = 6)+
+  draw_label("1", x=0.135, y=0.224, color = "black", size = 6)+
+  draw_label("0.5", x=0.127, y=0.922, color = "black", size = 6)+
+  draw_label("0.5", x=0.127, y=0.772, color = "black", size = 6)+
+  draw_label("0.5", x=0.127, y=0.622, color = "black", size = 6)+
+  draw_label("0.5", x=0.127, y=0.472, color = "black", size = 6)+
+  draw_label("0.5", x=0.127, y=0.32, color = "black", size = 6)+
+  draw_label("0.5", x=0.127, y=0.17, color = "black", size = 6)+
+  draw_label("0", x=0.135, y=0.868, color = "black", size = 6)+
+  draw_label("0", x=0.135, y=0.718, color = "black", size = 6)+
+  draw_label("0", x=0.135, y=0.566, color = "black", size = 6)+
+  draw_label("0", x=0.135, y=0.415, color = "black", size = 6)+
+  draw_label("0", x=0.135, y=0.265, color = "black", size = 6)+
+  draw_label("0", x=0.135, y=0.114, color = "black", size = 6)+
+  draw_label("Heterozygosity", angle = 90, x = 0.09, y=0.55, size = 11, color = "black")+
+  draw_label("LO01F", x=0.535, y=0.965, color = "black", size = 6)+
+  draw_label("LO03M", x=0.535, y=0.81, color = "black", size = 6)+
+  draw_label("OM283", x=0.535, y=0.66, color = "black", size = 6)+
+  draw_label("OF304", x=0.535, y=0.51, color = "black", size = 6)+
+  draw_label("E14F", x=0.536, y=0.357, color = "black", size = 6)+
+  draw_label("E33M", x=0.536, y=0.207, color = "black", size = 6)
+
+
+g1<-plot_grid(kary_labelled, FROHvHet,
+              ncol = 2,
+              labels = c('A','B'),
+              rel_widths = c(1.25,1))
+
+figure2<-plot_grid(g1,exp_gen,
+                   nrow = 2,
+                   labels = c("","C"), 
+                   rel_heights = c(1.25,1))
+
+ggsave("../../figures/figure3.pdf", dpi = 1200)
+ggsave("../../figures/figure3.png", dpi = 1200)

@@ -1,0 +1,14 @@
+
+VCFtools - 0.1.18
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--vcf [stdin]
+	--het
+	--out ./results/diversity/wild_het_roh_LDpruned_05
+
+Warning: Expected at least 2 parts in INFO entry: ID=PR,Number=0,Type=Flag,Description="Provisional reference allele, may not be based on real reference genome">
+After filtering, kept 44 out of 44 Individuals
+Outputting Individual Heterozygosity
+After filtering, kept 87122 out of a possible 87122 Sites
+Run Time = 2.00 seconds

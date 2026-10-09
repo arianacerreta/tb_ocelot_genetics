@@ -3,7 +3,11 @@ export VCFTOOLS="/path/local/bin" #directory to your executable vcftools
 export PATH="/c/msys64/ucrt64/bin:$PATH" #to make it work in the console in R on a Windows computer; mileage may vary with MAC
 mkdir -p "./results/diversity"
 
+#standard filtering
 zcat ./data/processed/wild_standard_final.vcf.gz | "${VCFTOOLS}"/vcftools --vcf - --het --out ./results/diversity/wild_het
+
+#filtering as in ROH analyses for better comparison
+zcat ./data/processed/addtl_filter/clean_roh_LDpruned_05.vcf.gz | "${VCFTOOLS}"/vcftools --vcf - --het --out ./results/diversity/wild_het_roh_LDpruned_05
 
 #command for producing windowed pi with vcftools, done for both populations:
 zcat ./data/processed/refuge_standard_postsubset.vcf.gz | "${VCFTOOLS}"/vcftools --vcf - --window-pi 50000 --out ./results/diversity/refuge-nucleotide

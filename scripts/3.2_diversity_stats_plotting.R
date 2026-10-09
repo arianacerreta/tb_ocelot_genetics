@@ -112,3 +112,26 @@ genome_pi_weighted <- all_pi %>%
             StdDev = sd(PI, na.rm = TRUE),
             StdError = (sd(PI, na.rm = TRUE)/sqrt(n())))
 write.csv(genome_pi_weighted,"./results/diversity/weighted_genome_pi.csv")
+
+
+####with ROH filtering settings for Figure 3b
+#read in output
+ind_het_roh <- read.table("./results/diversity/wild_het_roh_LDpruned_05.het", header = TRUE)
+#converting raw values into the proportions
+
+ind_het_roh$O_het <- (ind_het_roh$N_SITES - ind_het_roh$O.HOM.) / ind_het_roh$N_SITES
+ind_het_roh$O_hom <- ind_het_roh$O.HOM. / ind_het_roh$N_SITES
+ind_het_roh$E_hom <- ind_het_roh$E.HOM. / ind_het_roh$N_SITES
+ind_het_roh$E_het <- (ind_het_roh$N_SITES - ind_het_roh$E.HOM.) / ind_het_roh$N_SITES
+ind_het_roh[, c("INDV", "O_hom", "O_het", "E_hom", "E_het", "F")]
+
+write.csv(ind_het_roh, "./results/diversity/ind_het_fis_rohfilt.csv")
+
+#get population averages
+wild_origins<-read.delim("./data/inputs/wild_subset.txt", header = FALSE, sep = "\t") #read in wild_subset.txt
+wild_origins<-wild_origins[,-1]
+colnames(wild_origins) <- c("INDV", "pop")
+pop_het_roh <- left_join(ind_het_roh, wild_origins, by = "INDV")
+pop_het_roh <- pop_het_roh %>%
+  mutate(INDV = gsub("-.*", "", INDV))
+write.csv(pop_het_roh, "./results/diversity/pop_het_fis_rohfilt.csv")

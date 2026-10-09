@@ -110,6 +110,9 @@ system(paste0(PLINKpath,"/plink --bfile wild_kin_roh_filter --extract roh_LDprun
 
 #make .raw file to work with Matt's heterzygosity moving window code
 system(paste0(PLINKpath,"/plink --bfile roh_LDpruned_05 --chr-set 17 --recode A --out roh_LDpruned_05_data_allele"))
+#no LD filtering, but ROH and kinship filters; no MAF, miss 90, biallelic, coverage depth 7, genotype quality 9; same as KING-robust
+#wild_kin_roh_filter
+system(paste0(PLINKpath,"/plink --bfile wild_kin_roh_filter --chr-set 17 --recode A --out roh_LDpruned_05_data_allele"))
 
 #write vcf
 system(paste0(PLINKpath,"/plink2 --bfile roh_LDpruned_05 --chr-set 17 --export vcf-4.2 bgz --out roh_LDpruned_05"))
