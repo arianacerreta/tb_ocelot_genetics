@@ -1,3 +1,11 @@
 1_bcftools_preprocessing.sh: shell code to run in command line for processing the joint_call.LAO03M.20251202.vcf.gz provided from Texas A&M University
 2_PLINK_preanalysis.R: R code used to call PLINK/PLINK2 and perform filtering prior to analyses
-3_PCA_analysis: R code used to call PLINK for PCA analysis and use R packages for plotting
+3.1_bcftools_het.sh: shell code that calculates individual heterozygosity, π, F with bcftools
+3.2_diversity_stats_plotting.R: R code that uses outputs from 3.1_bcftools_het.sh to summarize and plot data
+4_PCA_analysis.R: R code to perform PCA on wild ocelots and plot
+5_KING-robust_analysis.R: R code to call PLINK2 to calculate KING-robust kinship estimator for WILD individuals and plots
+6.1_admixture_analysis.sh: shell code to call and run ADMIXTURE
+6.2_admixture_plotting.R: R code that reads in results from ADMIXTURE runs for plotting
+7.1_ROH_bcftools.sh: shell code that calls bcftools to perform ROH analysis
+7.2_ROH_plotting.R: R code that plots results from ROH analysis
+8_study_map.R: creates study map

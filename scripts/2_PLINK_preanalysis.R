@@ -58,7 +58,7 @@ system(paste0(PLINKpath,"/plink2 --bfile SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix -
 ###subset data -- remove mountain lion and duplicates, for manuscript 1 keeping only wild populations
 system(paste0(PLINKpath,"/plink --bfile SNP_AllChrom_AllInd_dp7_gq9_bi_chrfix_uniqueID --keep ../inputs/wild_subset.txt --chr-set 17 --make-bed --out SNP_wild_dp7_gq9_bi"))
 
-#Total genotyping rate in remaining samples is 0.883688; 2,950,351 variants and 44 samples pass filters and QC.
+#Not filtered for missingness yet; Total genotyping rate in remaining samples is 0.883688; 2,950,351 variants and 44 samples pass filters and QC.
 
 #at this point, coverage depth of 7-22, genotype quality of 9, and biallelic filters applied to create base file
 
@@ -101,6 +101,10 @@ system(paste0(PLINKpath,"/plink2 --bfile wild_LDpruned_05 --chr-set 17 --export 
 #ROH and kinship filters; no MAF, miss 90, biallelic, coverage depth 7, genotype quality 9
 #also used in kinship analyses; as is recommended not to filter for MAF or LD prune
 system(paste0(PLINKpath,"/plink --bfile ../SNP_wild_dp7_gq9_bi --chr-set 17 --keep-allele-order --geno 0.1 --hwe 1e-6 --make-bed --out wild_kin_roh_filter"))
+#Total genotyping rate is 0.883688.
+#1691187 variants removed due to missing genotype data (--geno).
+#--hwe: 566 variants removed due to Hardy-Weinberg exact test.
+#1258598 variants and 44 samples pass filters and QC.
 
 #for bcftools roh selection: ld pruning is required as it assumes every base is independent
 system(paste0(PLINKpath,"/plink --bfile wild_kin_roh_filter --chr-set 17 --keep-allele-order --indep-pairwise 50 5 0.5 --out roh_LDpruned_0.5_out")) #makes an out and in files of SNPs to keep and SNPs to remove

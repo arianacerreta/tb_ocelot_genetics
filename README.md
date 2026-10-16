@@ -54,6 +54,46 @@ forcats_1.0.1
 
 cowplot_1.2.0
 
+scales_1.4.0
+
+gridGraphics_0.5-1
+
+qpdf_1.4.1
+
+karyoploteR_1.28.0
+
+regioneR_1.34.0
+
+GenomicRanges_1.54.1
+
+data.table_1.18.6.1
+
+IRanges_2.36.0
+
+GenomicAlignments_1.38.2
+
+sf_1.1-3
+
+rnaturalearth_1.2.0
+
+rnaturalearthdata_1.0.0
+
+terra_1.8-29
+
+tidyterra_1.3.0
+
+raster_3.6-32
+
+tidyverse_2.0.0
+
+prismatic_1.1.2
+
+ggmap_4.0.2
+
+patchwork_1.3.2
+
+ggspatial_1.1.11
+
 Additional Programs:
 
 [bcftools](https://samtools.github.io/bcftools/howtos/index.html) v1.24
@@ -121,7 +161,7 @@ Ariana: update Zenodo link once created
 
 [6.2_admixture_plotting.R](./scripts/6.2_admixture_plotting.R)
 
-- reads in data from ADMIXTURE runs for plotting
+- reads in results from ADMIXTURE runs for plotting
 
 [7.1_ROH_bcftools.sh](./scripts/7.1_ROH_bcftools.sh)
 
@@ -130,3 +170,7 @@ Ariana: update Zenodo link once created
 [7.2_ROH_plotting.R](./scripts/7.2_ROH_plotting.R)
 
 - plots results from ROH analysis
+
+[8_study_map.R](./scripts/8_study_map.R)
+
+- make panel A of study map figure

@@ -9,7 +9,7 @@ export OUTPUT_DIR="./results/admixture" #no need to change if forked from GitHub
 
 #running admixture
 
-for run in {1..2}; do
+for run in {1..10}; do
  mkdir -p "${OUTPUT_DIR}/run${run}"
  (
   cd "${OUTPUT_DIR}/run${run}" || exit 1

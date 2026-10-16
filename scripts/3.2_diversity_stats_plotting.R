@@ -50,9 +50,9 @@ write.csv(pop_mean_f, "pop_mean_F.csv")
 #Fis = 1- (Ho/Hs); Ho is obs het averaged over all subpopulations (or in this case if we are looking at ranch v refuge then one or the other)
 #Hs is expected het averaged over all populations
 #I also don't think we report an SE typically
-overall_FIS<- 1-(mean(pop_het$O_het)/mean(pop_het$E_het))
-ranch_FIS<-1-(pop_mean_ho[1,2]/pop_mean_he[1,2])
-refuge_FIS<- 1-(pop_mean_ho[2,2]/pop_mean_he[2,2])
+overall_FIS<- 1-(mean(pop_het$O_het)/mean(pop_het$E_het)) #0.07036327
+ranch_FIS<-1-(pop_mean_ho[1,2]/pop_mean_he[1,2])# 0.1215744
+refuge_FIS<- 1-(pop_mean_ho[2,2]/pop_mean_he[2,2]) #0.0142876
 
 
 ###nucleotide diversity - population level

@@ -5,5 +5,6 @@
 *.jpg
 *.docx
 data/processed
+data/spatial_inputs
 results/admixture
 /not_public/

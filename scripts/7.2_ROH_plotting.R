@@ -5,9 +5,8 @@ setwd("./results/roh")
 #clean your environment
 rm(list = ls())
 
-library(data.table)
-
 #libraries
+
 library(dplyr)
 library(ggplot2)
 library(scales)
@@ -50,6 +49,12 @@ ind_roh_LD <- aggregate(length_bp ~ sample, data = roh_LD_filt, FUN = sum)
 # Calculate FROH
 ind_roh_LD$FROH <- (ind_roh_LD$length_bp / 2468705656) * 100 #updated number of bases to reflect ocelot scaffold primary assembly length (bp) Foley et al. 2026
 
+#average ROH length across all indiv
+mean(roh_LD_filt$length_bp)/1000000 #for Mb
+#11.30236
+#longest ROH
+max(roh_LD_filt$length_bp)/1000000 #for Mb
+#139.6876
 #writing tables
 write.csv(ind_roh_LD, "froh_by_individual_hmm.csv")
 write.csv(roh_LD_filt, "roh_segments_filt_qual_length_hmm.csv", row.names = FALSE)
@@ -69,6 +74,8 @@ wild_roh_pop<-wild_roh_pop%>%
   ))%>%
   mutate(sample = gsub("-.*", "", sample))
 
+
+
 #add in heterozygosity for each individual
 #obs_het with same filtering as for Roh calculations 
 pop_het_fis<-read.csv("../diversity/pop_het_fis_rohfilt.csv", header = TRUE)
@@ -80,10 +87,10 @@ FROHvHet<-ggplot(data = wild_roh_pop, aes(x = O_het, y = FROH, color = pop.x))+
   geom_point()+
   theme_minimal() +
   labs(x = "Observed heterozygosity", y = expression(F[ROH] ("%")), color = "Population")+
-  scale_color_manual(values = c("Ranch" = "#CC79A7", "Refuge" = "#0072B2"))+
+  scale_color_manual(values = c("Ranch" = "#D55E00", "Refuge" = "#0072B2"))+
   theme(legend.title = element_text(size = 11),
         legend.text = element_text(size = 10),
-        legend.position = c(0.70,0.98),
+        legend.position = c(0.65,0.98),
         legend.justification = c("left", "top"),
         legend.box.background = element_rect(color = "#e5e5e5", fill = "#f9f9f9", linewidth = 0.5),
         axis.text.x = element_text(size = 10, color = "black"),
@@ -114,7 +121,7 @@ ggplot() +
                 aes(x = pop.x, y = Average, 
                     ymin = Average - 1*StdDev, ymax = Average + 1*StdDev), #updated to 1SD per comments-ALC9/9/2026
                 color = "black", width = 0.2, size = 1) +
-  scale_fill_manual(values = c("Ranch" = "#CC79A7", "Refuge" = "#0072B2")) +
+  scale_fill_manual(values = c("Ranch" = "#D55E00", "Refuge" = "#0072B2")) +
   # Add individual points
   geom_jitter(data = wild_roh_pop, aes(x = pop.x, y = FROH), #consider seeing if height = 0 changes anything
               width = 0.15, height = 0, alpha = 0.4, size = 3) +
@@ -128,7 +135,16 @@ ggplot() +
         plot.title = element_text(size = 16, hjust = 0.5),
         legend.position = "none")
 
-ggsave("../../figures/wild_roh_violin_plot.pdf", dpi = 1200) #change to .pdf for pdf; .png for png
+ggsave("../../figures/wild_roh_violin_plot.png", dpi = 1200) #change to .pdf for pdf; .png for png
+
+ranch_roh<-wild_roh_pop %>% filter(pop.x == "Ranch")
+summary(ranch_roh$FROH)
+#Min.   1st Qu.  Median    Mean 3rd Qu.    Max. 
+#8.019  13.960  19.007  19.293  23.358  39.617
+refuge_roh<-wild_roh_pop %>% filter(pop.x == "Refuge")
+summary(refuge_roh$FROH)
+#Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#10.03   21.45   23.68   26.33   32.16   49.35 
 
 ####proportion of ROH lengths
 #read in .hom files
@@ -142,7 +158,8 @@ roh_seg_df$length_KB <- roh_seg_df$length_bp/1000 #converting bp to kilobase pai
 hist(roh_seg_df$length_MB, main="Distribution of ROH lengths", xlab="Length (MB)")
 max(roh_seg_df$length_MB, na.rm = TRUE) #139.6876
 min(roh_seg_df$length_MB, na.rm = TRUE) #0.526017
-mean(roh_seg_df$length_MB, na.rm = TRUE) #11.19929
+mean(roh_seg_df$length_MB, na.rm = TRUE) #11.19929; rounding error
+mean(roh_seg_df$length_bp, na.rm = TRUE)/1000000 #11.30236
 #define length categories
 roh_seg_df$Category <- cut(roh_seg_df$length_MB,
                            breaks = c(0, 1, 2, 4, 6, 8, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, Inf),
@@ -247,7 +264,7 @@ p<-ggplot(gen_plot_df, aes(x = gen_bins, fill = pop)) +
     fill = "Populations"
   ) +
   theme_minimal() +
-  scale_fill_manual(values = c("ranch" = "#CC79A7", "refuge" = "#0072B2"),
+  scale_fill_manual(values = c("ranch" = "#D55E00", "refuge" = "#0072B2"),
                     labels = c("ranch" = "Ranch", "refuge" = "Refuge")) +
   theme(
     axis.text.x = element_text(size = 10, color = "black"),
@@ -263,26 +280,62 @@ p<-ggplot(gen_plot_df, aes(x = gen_bins, fill = pop)) +
   )
 
 exp_gen<-ggdraw(p)+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[1],")"), x = 0.932, y = 0.23, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[2],")"), x = 0.824, y = 0.23, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[3],")"), x = 0.713, y = 0.23, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[4],")"), x = 0.602, y = 0.23, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[5],")"), x = 0.493, y = 0.23, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[6],")"), x = 0.381, y = 0.23, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[7],")"), x = 0.270, y = 0.23, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[8],")"), x = 0.162, y = 0.23, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[1],")"), x = 0.932, y = 0.225, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[2],")"), x = 0.826, y = 0.225, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[3],")"), x = 0.718, y = 0.225, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[4],")"), x = 0.605, y = 0.225, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[5],")"), x = 0.498, y = 0.225, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[6],")"), x = 0.387, y = 0.225, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[7],")"), x = 0.278, y = 0.225, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[8],")"), x = 0.170, y = 0.225, size = 6, color = "black")+
   draw_label("(ROH length in Mb)", x = 0.55, y = 0.09, size = 8, color = "black")
 
  
 #new Categories for Table 2
-roh_seg_df$Category2 <- cut(roh_seg_df$length_MB,
+roh_seg_cat$Category2 <- cut(roh_seg_cat$length_MB,
                            breaks = c(0, 1, 2, 4, 6, 8, 10, 20, 30, 40, 50, 60, 70, 80, Inf),
-                           labels = c("<1Mb", "1-2Mb", "2-4Mb", "4-6Mb", "6-8Mb", "8-10MB", "10-20Mb",
-                                      "20Mb-30Mb", "30Mb-40Mb", "40Mb-50Mb", "50Mb-60Mb", "60Mb-70Mb",
-                                      "70Mb-80Mb", ">80Mb"),
+                           labels = c("<1", "1-2", "2-4", "4-6", "6-8", "8-10", "10-20",
+                                      "20-30", "30-40", "40-50", "50-60", "60-70",
+                                      "70-80", ">80"),
                          include.lowest = TRUE)
+#calculate hypothetical gens from MB boundaries
+bin_bound_MB<-c(1, 2, 4, 6, 8, 10, 20, 30, 40, 50, 60, 70, 80)
+gen_bounds <- 100/(2*(1.1)*bin_bound_MB)
+
+max_calc<-c(MB[1],MB)
+min_calc<-c(MB,MB[length(MB)])
+
+#binning generation time
+roh_seg_cat <- roh_seg_cat %>% 
+  mutate(
+    gen_bins2 = case_when(
+      gen < 2 ~ "<2",
+      gen >= 2 & gen < 5 ~ "2-5",
+      gen >= 5 & gen < 10 ~ "5-10",
+      gen >= 10 & gen < 20 ~ "10-20",
+      gen >= 20 & gen < 40 ~ "20-40",
+      gen >= 40 & gen < 60 ~ "40-60",
+      gen >= 60 & gen < 80 ~ "60-80",
+      gen >= 12 ~ "80+",
+      TRUE ~"Other"
+    ),
+    gen_bins = factor(gen_bins, levels = c("<2","2-5","5-10","10-20","20-40","40-60", "60-80","80+"))
+  )
+
+#merge bin ranges with data frame
+gen_plot_df <- roh_seg_cat %>% 
+  left_join(bin_ranges, by = "gen_bins") %>% 
+  mutate(range_label = paste0(min_calc, "-", max_calc))%>%
+  mutate(range_label = case_when(
+    range_label == "0.57-0.57" ~ "<0.57",
+    range_label == "22.73-22.73" ~ ">22.73",
+    TRUE ~ range_label
+  ),
+  range_label = factor(range_label, levels = c("<0.57","0.57-0.76","0.76-1.14","1.14-2.27","2.27-4.55","4.55-9.09", "9.09-22.73",">22.73"))
+  )
+
 #summary by population  
-population_category_counts <- roh_seg_df %>%
+population_category_counts <- roh_seg_cat %>%
   group_by(pop, Category2)  %>%
   summarise(Count = n(), Total_Length_MB = sum(length_MB), .groups = "drop")
 
@@ -313,6 +366,29 @@ normalized_roh <- population_category_counts %>%
   ungroup()
 write.csv(normalized_roh, "pop_normalized_roh.csv")
 
+#plotting
+ggplot(data = normalized_roh, aes(x = Category2, y = Avg_ROH_Count_Per_Individual, group = pop))+
+  geom_line(aes(color = pop))+
+  scale_color_manual(values = c("ranch" = "#D55E00", "refuge" = "#0072B2"),
+                    labels = c("ranch" = "Ranch", "refuge" = "Refuge")) +
+  labs(
+    x = "ROH Length (Mb)",
+    y = "Average ROH Count per Individual",
+    color = "Populations"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 10, color = "black", angle = 90),
+    axis.text.y = element_text(size = 10, color = "black"),
+    axis.title.x = element_text(size = 11, vjust = -6),
+    axis.title.y = element_text(size = 11),
+    legend.title = element_text(size = 11),
+    legend.text = element_text(size = 10),
+    legend.box.background = element_rect(color = "#e5e5e5", fill = "#f9f9f9", size = 0.5),
+    legend.position = c(0.98,0.98),
+    legend.justification = c("right", "top"),
+    plot.margin = margin(b= 1.5, t = 0.5,l = 0.7, unit = "cm")
+  )
 ##################################################################
 ####Visualizing ROH --karyotype plot --- individual plots working
 
@@ -655,16 +731,17 @@ windowed_het_avg <- windowed_het_avg %>%
 
 chr_midpoints <- chr_info %>% mutate(mid = chr_start + chr_len / 2)
 
-#filter to only Chr4
-windowed_het_chr4<-windowed_het %>%
-  filter(chr == "4")
-LO01F<-windowed_het_chr4 %>%
-  filter(individual == "LO01F")
+
 
 saveRDS(windowed_het, file = "windowed_het.RDS")
 
 #read in RDS if needed
 windowed_het<-readRDS(file = "windowed_het.RDS")
+
+#filter to only Chr4
+windowed_het_chr4<-windowed_het %>%
+  filter(chr == "4")
+
 #make a GRange object
 het_points <- GRanges(
   seqnames = paste0(windowed_het_chr4$individual), #since this is all chr4; hacking this line for individual labels
@@ -673,7 +750,7 @@ het_points <- GRanges(
   sample_id = windowed_het_chr4$individual)
 
 #LO01F-1,LO03M-1,OM283-2 (big ROH),LAO03M-1 (big ROH), OF304-1A (little ROH), E33M-1 (little ROH), E14F-1 (big ROH)
-sample_id<-c("LO01F","LO03M", "OM283", "OF304", "E14F", "E33M") #ranch
+sample_id<-c("E33M", "E14F","OM283", "OF304","LO03M","LO01F") 
 individual_roh <- chr4_gr[mcols(chr4_gr)$sample_id %in% sample_id]
 #"ranch" = "#CC79A7", "refuge" = "#0072B2"
 color_ref<-matrix(data = NA, ncol = 3, nrow = length(individual_roh@seqnames@values))
@@ -681,7 +758,7 @@ colnames(color_ref)<-c("sample_id", "seg", "color")
 color_ref<-as.data.frame(color_ref)
 color_ref$sample_id<-paste0(individual_roh@seqnames@values)
 color_ref$seg<-individual_roh@seqnames@lengths
-color_ref$color<-c("#CC79A7","#CC79A7","#0072B2", "#0072B2", "#0072B2","#0072B2")
+color_ref$color<-c("#D55E00","#D55E00","#0072B2", "#0072B2", "#0072B2","#0072B2")
 colors<-rep(color_ref$color, color_ref$seg)
 
 params<-getDefaultPlotParams(6)
@@ -694,7 +771,7 @@ params$data2outmargin<-2
 params$leftmargin<-0.15
 
 #start plot
-w_kp <- plotKaryotype(genome = ocel_genome, chromosomes = "all",
+w_kp <- plotKaryotype(genome = ocel_genome, chromosomes = c("E33M", "E14F","OM283", "OF304","LO03M","LO01F"),
                       plot.params = params,
                       plot.type = 6,
                       cex = 0.5
@@ -731,8 +808,8 @@ kary_labelled<-ggdraw(kary)+
   draw_line(x=c(0,1), y=c(0.24,0.24), color = "white", size = 3)+
   draw_line(x=c(0,1), y=c(0.39,0.39), color = "white", size = 3)+
   draw_line(x=c(0,1), y=c(0.54,0.54), color = "white", size = 3)+
-  draw_line(x=c(0,1), y=c(0.69,0.69), color = "white", size = 3)+
-  draw_line(x=c(0,1), y=c(0.84,0.84), color = "white", size = 3)+
+  draw_line(x=c(0,1), y=c(0.691,0.691), color = "white", size = 3)+
+  draw_line(x=c(0,1), y=c(0.841,0.841), color = "white", size = 3)+
   draw_label("1", x=0.135, y=0.976, color = "black", size = 6)+
   draw_label("1", x=0.135, y=0.826, color = "black", size = 6)+
   draw_label("1", x=0.135, y=0.676, color = "black", size = 6)+
@@ -752,12 +829,19 @@ kary_labelled<-ggdraw(kary)+
   draw_label("0", x=0.135, y=0.265, color = "black", size = 6)+
   draw_label("0", x=0.135, y=0.114, color = "black", size = 6)+
   draw_label("Heterozygosity", angle = 90, x = 0.09, y=0.55, size = 11, color = "black")+
-  draw_label("LO01F", x=0.535, y=0.965, color = "black", size = 6)+
-  draw_label("LO03M", x=0.535, y=0.81, color = "black", size = 6)+
+  draw_label("E33M", x=0.536, y=0.965, color = "black", size = 6)+ #"E33M", "E14F","OM283", "OF304","LO03M","LO01F"
+  draw_label("E14F", x=0.536, y=0.810, color = "black", size = 6)+
   draw_label("OM283", x=0.535, y=0.66, color = "black", size = 6)+
   draw_label("OF304", x=0.535, y=0.51, color = "black", size = 6)+
-  draw_label("E14F", x=0.536, y=0.357, color = "black", size = 6)+
-  draw_label("E33M", x=0.536, y=0.207, color = "black", size = 6)
+  draw_label("LO03M", x=0.536, y=0.357, color = "black", size = 6)+
+  draw_label("LO01F", x=0.536, y=0.207, color = "black", size = 6)+
+  draw_label("Ranch male", x=0.219, y=0.990, color = "black", size = 7)+ #"E33M", "E14F","OM283", "OF304","LO03M","LO01F"
+  draw_label("Ranch female", x=0.230, y=0.840, color = "black", size = 7)+
+  draw_label("Refuge male", x=0.223, y=0.691, color = "black", size = 7)+
+  draw_label("Refuge female", x=0.234, y=0.541, color = "black", size = 7)+
+  draw_label("Father of LO01F", x=0.240, y=0.388, color = "black", size = 7)+
+  draw_label("First-generation offspring", x=0.290, y=0.238, color = "black", size = 7)
+  
 
 
 g1<-plot_grid(kary_labelled, FROHvHet,
@@ -765,10 +849,9 @@ g1<-plot_grid(kary_labelled, FROHvHet,
               labels = c('A','B'),
               rel_widths = c(1.25,1))
 
-figure2<-plot_grid(g1,exp_gen,
+figure3<-plot_grid(g1,exp_gen,
                    nrow = 2,
                    labels = c("","C"), 
                    rel_heights = c(1.25,1))
 
-ggsave("../../figures/figure3.pdf", dpi = 1200)
-ggsave("../../figures/figure3.png", dpi = 1200)
+ggsave("../../figures/figure3.png", dpi = 1200) #Saving 7.52 x 7.48 in image

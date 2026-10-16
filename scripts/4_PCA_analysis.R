@@ -53,10 +53,10 @@ wild_pca <- ggplot(pca.data.wild.origins, aes(x=V3,y=V4)) +  #plot with individu
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("OM331")), #in correct position
             aes(label=ID), vjust=0.65, hjust=1.1, size=2.5, color = "#004166") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("E35M")), #in correct position
-            aes(label=ID), vjust=-0.5, hjust=-0.07, size=2.5, color = "#8f3767") + 
+            aes(label=ID), vjust=-0.5, hjust=-0.07, size=2.5, color = "#bc5300") + 
   geom_text(data = subset(pca.data.wild.origins, ID %in% c("LO01F")), #in correct position
             aes(label=ID), vjust=-0.5, hjust=-0.07, size=2.5, color = "#004166") + 
-  scale_color_manual(name = "Population", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = "#0072B2", "ranch" = "#CC79A7")) + #palette colors from "Okabe-Ito" designed for color vision deficiencies
+  scale_color_manual(name = "Population", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = "#0072B2", "ranch" = "#D55E00")) + #palette colors from "Okabe-Ito" designed for color vision deficiencies
   scale_shape_manual(name = "Population", labels = c("refuge"= "Refuge","ranch" = "Ranch"), values = c("refuge" = 19, "ranch" = 17)) +
   labs(x = paste0("PC1 (", pc1_variance, "%)"),
        y = paste0("PC2 (", pc2_variance, "%)")) +

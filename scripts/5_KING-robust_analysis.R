@@ -5,7 +5,7 @@
 #library
 library(dplyr)
 library(ggplot2)
-library(ggdraw)
+library(cowplot)
 
 #clean your environment
 rm(list=setdiff(ls(),"wild_pca")) 

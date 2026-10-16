@@ -99,7 +99,7 @@ CV_plot<-ggplot()+
     axis.text = element_text(size = 12)
   )
 CV_plot
-ggsave("../../figures/CV_ADMIXTURE_PLOT.pdf", dpi = 1200)
+ggsave("../../figures/CV_ADMIXTURE_PLOT.png", dpi = 1200) #.pdf for pdf
 
 #reading in and preparing data
 w_k2_table <- read.table("./run1/wild_LDpruned_05_k2_run1.Q") ## finished through here
@@ -139,7 +139,7 @@ w_k2plot <-
         strip.placement = "outside",
         axis.text.y = element_text(size = 8, hjust = -1)
   ) +
-  scale_fill_manual(values = c("V1" = "#0072B2", "V2" = "#CC79A7")) +
+  scale_fill_manual(values = c("V1" = "#0072B2", "V2" = "#D55E00")) +
   guides(fill = "none")
 
 
@@ -162,3 +162,5 @@ figure2<-plot_grid(g1,w_k2plot,
 
 ggsave("../../figures/figure2.pdf", dpi = 1200)
 ggsave("../../figures/figure2.png", dpi = 1200)
+
+setwd("../..")
