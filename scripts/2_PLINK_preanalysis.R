@@ -9,7 +9,7 @@
 ##update with your path to PLINK and PLINK2
 PLINKpath<-"path/Plink_files/WindowsPLINK"
 
-##inputs on Zenodo (ADD DOI): allInd_SNPs_autosomes.vcf.gz originally; Ariana updated to allInd_SNPs_autosomes_bi_gq9.vcf.gz to incorporate gq9
+##inputs on Zenodo (https://doi.org/10.5281/zenodo.23545042): allInd_SNPs_autosomes_bi_gq9.vcf.gz
 ##update with your path
 ZenodoVCFpath<-"path/allInd_SNPs_autosomes_bi_gq9.vcf.gz" #2,950,351 SNPs
 

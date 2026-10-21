@@ -3,7 +3,8 @@
 
 #Instructions: edit the corresponding paths to match your directory paths before running code; if on mac run L10 to troubleshoot PLINK2; others start on L13
 ##if you are opening this code in R from a forked repository, stay in default project directory from tb_ocelot_genetics.Rproj
-##you will need to download joint_call.LAO03M.20251202.vcf.gz from Zenodo and know what directory it is in
+##joint_call.LAO03M.20251202.vcf.gz can be made available from first author upon reasonable request due to size limitations
+##you will need to download allInd_SNPs_autosomes.vcf.gz from Zenodo (https://doi.org/10.5281/zenodo.23545042) and know what directory it is in
 ##you will need to download ocelot genome of ocelot genome GCA_058742865.1 as a .fna.gz from NCBI
 ##TIP: to run these lines within an R session, click on the "Terminal" in the console pane
 

@@ -21,7 +21,7 @@ however some shell code is also included when necessary.
 ### [Data](./data) 
 
 Contains input files, which are small files used to subset data. Raw data will 
-need to be downloaded from [Zenodo](./data) and stored locally on your device 
+need to be downloaded from [Zenodo](https://doi.org/10.5281/zenodo.23545042) and stored locally on your device 
 due to file size constraints. If you fork this repository and run the code, it 
 will create directories for processed data locally. These folders are not pushed 
 to the GitHub repository due to file size. You will need to download the ocelot genome,
@@ -116,16 +116,16 @@ the United States. In prep.
 ### How to Use this Repository 
 
 Fork this repository to your computer. Download additional input files from 
-[Zenodo](./data). Download [ocelot reference genome](https://ncbi.nlm.nih.gov/datasets/genome/GCA_058742865.1/). 
-To recreate all intermediate files begin with [1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh) 
-and follow through the pipeline as listed below. To avoid long processing times 
+[Zenodo](https://doi.org/10.5281/zenodo.23545042). Download [ocelot reference genome](https://ncbi.nlm.nih.gov/datasets/genome/GCA_058742865.1/). 
+To recreate intermediate files starting with ```allInd_SNPs_autosomes.vcf.gz``` start at 
+line 44 after reading in paths in [1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh) 
+and follow through the pipeline as listed below. Original input file ```joint_call.LAO03M.20251202.vcf.gz``` exceeds 
+file size limits on Zenodo but can be made available upon reasonable request.  To avoid long processing times 
 in pre-processing steps, begin with intermediate file ```allInd_SNPs_autosomes_bi_gq9.vcf.gz```and [2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R). 
 
 *Most* paths are internally referenced within the code with notable exceptions 
 being your path to bcftools, PLINK, ADMIXTURE, vcftools, and original input files downloaded 
 from Zenodo. Paths that will need to be updated are annotated within the code or are indicated with ```/path/```.
-
-Ariana: update Zenodo link once created
 
 #### Filtering steps
 
