@@ -390,238 +390,7 @@ ggplot(data = normalized_roh, aes(x = Category2, y = Avg_ROH_Count_Per_Individua
     plot.margin = margin(b= 1.5, t = 0.5,l = 0.7, unit = "cm")
   )
 ##################################################################
-####Visualizing ROH --karyotype plot --- individual plots working
-
-#make data frame for plotting
-plot_df <- data.frame(
-  chr = paste0(roh_seg_df$chromosome),  # Add 'chr' prefix if needed
-  start = roh_seg_df$start, #starting location of roh
-  end = roh_seg_df$end, #ending location of roh
-  kb = roh_seg_df$length_KB,   # ROH length in KB
-  nsnp = roh_seg_df$n_markers,   # Number of SNPs in ROH
-  sample_id = roh_seg_df$sample, # Individual ID
-  pop = roh_seg_df$pop #population information
-)
-#applying chromosome names for plots
-chr_map <- c(
-  "1" = "chr1",
-  "2" = "chr2",
-  "3" = "chr3",
-  "4" = "chr4",
-  "5" = "chr5",
-  "6" = "chr6",
-  "7" = "chr7",
-  "8" = "chr8",
-  "9" = "chr9",
-  "10" = "chr10",
-  "11" = "chr11",
-  "12" = "chr12",
-  "13" = "chr13",
-  "14" = "chr14",
-  "15" = "chr15",
-  "16" = "chr16",
-  "17" = "chr17"
-)
-plot_df$chr <- chr_map[plot_df$chr]
-
-#create custom feline genotype for karyoploteR, make a custom plot type for the 17 chr
-LP_chr_sizes <- data.frame(
-  chr = c(paste0("chr", 1:17)), 
-  start = rep(1, 17),
-  end = c(241490831,  # chr1 Chr lengths from NCBI ocelot reference (https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_058742865.1/)
-          170782778,  # chr2
-          140550405,  # chr3
-          207231548,  # chr4
-          154917953,  # chr5
-          149666277,  # chr6
-          142417080,  # chr7
-          222385042,  # chr8
-          159437941,  # chr9
-          154776197,  # chr10
-          116981451,   # chr11
-          90819563,   # chr12
-          96629807,   # chr13
-          95534813,   # chr14
-          64119235,   # chr15
-          62492039,   # chr16
-          44368689   # chr17
-  )
-)  
-feline_genome_gr <- GRanges(seqnames = LP_chr_sizes$chr, ranges = IRanges(start = LP_chr_sizes$start, end = LP_chr_sizes$end)) #make into grange object
-ocel_genome <- feline_genome_gr #making the custom plot type
-seqlevels(ocel_genome) <- LP_chr_sizes$chr
-seqlengths(ocel_genome) <- LP_chr_sizes$end
-
-# roh convert to GRanges object
-roh_gr <- GRanges(
-  seqnames = plot_df$chr,
-  ranges = IRanges(start = plot_df$start, end = plot_df$end),
-  kb = plot_df$kb,
-  nsnp = plot_df$nsnp,
-  sample_id = plot_df$sample_id) #making hom file into grange
-
-#####creating function for plotting -- individual
-plot_individual_roh <- function(sample_id, output_file = NULL) {
-  # Filter ROH data for specific individual
-  individual_roh <- roh_gr[mcols(roh_gr)$sample_id %in% sample_id]
-  # Determine if output should go to a file
-  if (!is.null(output_file)) {
-    pdf(output_file, width = 10, height = 7)
-  }
-  #create the plot using the custom genome
-  ind_kp <- plotKaryotype(genome = ocel_genome, plot.type = 1, main = paste("ROH for", sample_id))
-  #kpAddChromosomeNames(w_kp, srt = 45, cex = 0.8) #not using this line for now
-  #plot individuals
-  kpRect(ind_kp, 
-         chr = as.character(seqnames(individual_roh)), 
-         x0 = start(individual_roh), 
-         x1 = end(individual_roh),
-         y0 = 0, 
-         y1 = 1, 
-         col = "#FF000080",  # Semi-transparent red
-         border = "#FF0000",
-         r0 = 0, r1 = 1,
-         data.panel = "ideogram")
- 
-  # Close file if opened
-  if (!is.null(output_file)) {
-    dev.off()
-  }
-  # Return the filtered data
-  return(individual_roh)
-}
-
-##using the function -- plotting individual roh
-unique_samples <- unique(plot_df$sample_id)
-
-# Sanitize function to make safe filenames
-sanitize_filename <- function(name) {
-  gsub("[^A-Za-z0-9_]", "_", name)  # Replace anything that's not a letter, number, or underscore
-}
-
-# Create directory for plots
-dir.create("wild_roh_plots", showWarnings = FALSE)
-
-dir.create("wild_roh_density_plots", showWarnings = FALSE) #skipped for now
-
-# Loop through each sample and create sanitized output files
-for (sample_id in unique_samples) {
-  safe_id <- sanitize_filename(sample_id)
-  output_file <- paste0("wild_roh_plots/", safe_id, "_roh_plot.pdf")
-  plot_individual_roh(sample_id, output_file)
-}
-files<-list.files("./wild_roh_plots/")
-files_w_path<-rep(paste0("./wild_roh_plots/",files))
-
-pdf_combine(input = files_w_path, output = "./wild_roh_plots/all_indiv_roh_plots.pdf")
-
-#clean enviornment of all but the plots needed to combine at end
-rm(list=setdiff(ls(),c("FROHvHet", "exp_gen")))
-
-###ROH single chrom plot
-#reading in data
-roh_chr4 <- read.csv("hmm_roh_seg_categorized.csv", header = TRUE)
-chr4_df <- data.frame(
-  chr = paste0(roh_chr4$chromosome),  # Add 'chr' prefix if needed
-  start = roh_chr4$start, #starting location of roh
-  end = roh_chr4$end, #ending location of roh
-  kb = roh_chr4$length_KB,   # ROH length in KB
-  nsnp = roh_chr4$n_markers,   # Number of SNPs in ROH
-  sample_id = roh_chr4$sample, # Individual ID
-  pop = roh_chr4$pop #population information
-)
-#filtering dataframe for only chrome 4
-chr4plot<- chr4_df[chr4_df$chr == "4", ]
-
-#creating a custom genotype for karyoplotr for chrom 4 only
-feline_chr_sizes <- data.frame(
-  chr = "chr4", 
-  start = 1,
-  end = 207231548  # chr4 length only 
-
-) 
-feline_genome_gr <- GRanges(seqnames = feline_chr_sizes$chr, ranges = IRanges(start = feline_chr_sizes$start, end = feline_chr_sizes$end)) #make into grange object
-ocel_genome <- feline_genome_gr #making the custom plot type
-seqlevels(ocel_genome) <- feline_chr_sizes$chr
-seqlengths(ocel_genome) <- feline_chr_sizes$end
-
-#making hom file into a granges file
-chr4_gr <- GRanges(
-  seqnames = paste0("chr", chr4plot$chr),
-  ranges = IRanges(start = chr4plot$start, end = chr4plot$end),
-  kb = chr4plot$kb,
-  nsnp = chr4plot$nsnp,
-  sample_id = chr4plot$sample_id)
-#creating the function to plot
-chr_4_plot <- function(sample_id, output_file = NULL) {
-  # Filter ROH data for specific individual
-  individual_roh <- chr4_gr[mcols(chr4_gr)$sample_id %in% sample_id]
-  
-  # Determine if output should go to a file
-  if (!is.null(output_file)) {
-    pdf(output_file, width = 10, height = 7)
-  }
-  #create the plot using the custom genome
-  w_kp <- plotKaryotype(genome = ocel_genome, plot.type = 1, main = paste("ROH on Chromosome 4 for", sample_id))
-  #kpAddChromosomeNames(w_kp, srt = 45, cex = 0.8) #not using this line for now
-  #plot individuals
-  kpRect(w_kp, 
-         chr = as.character(seqnames(individual_roh)), 
-         x0 = start(individual_roh), 
-         x1 = end(individual_roh),
-         y0 = 0, 
-         y1 = 1, 
-         col = "#FF000080",  # Semi-transparent red
-         border = "#FF0000",
-         r0 = 0.05, r1 = 0.95,
-         data.panel = "ideogram") #should plot directly onto the ideogram
-  # Close file if opened
-  if (!is.null(output_file)) {
-    dev.off()
-  }
-  # Return the filtered data
-  return(individual_roh)
-}
-#using the function
-unique_samples <- unique(chr4plot$sample_id)
-sanitize_filename <- function(name) {
-  gsub("[^A-Za-z0-9_]", "_", name)  # Replace anything that's not a letter, number, or underscore
-}
-dir.create("roh_plot_chr4", showWarnings = FALSE)
-for (sample_id in unique_samples) {
-  safe_id <- sanitize_filename(sample_id)
-  output_file <- paste0("roh_plot_chr4/", safe_id, "_chr4_roh_plot.pdf")
-  chr_4_plot(sample_id, output_file)
-}
-files<-list.files("./roh_plot_chr4/")
-files_w_path<-rep(paste0("./roh_plot_chr4/",files))
-
-pdf_combine(input = files_w_path, output = "./roh_plot_chr4/all_indiv_chr4_roh_plots.pdf")
-
-#plotting for Figure 3
-#creating a custom genotype for karyoploter for chrom 4 only
-#I have to duplicate chr4 for the total number of individuals I want to
-feline_chr_sizes <- data.frame(
-  chr = c("LO01F", "LO03M", "OM283", "OF304", "E14F", "E33M"),
-  start = rep(1,6),
-  end = rep(207231548,6)  # chr4 length only
-) 
-feline_genome_gr <- GRanges(seqnames = feline_chr_sizes$chr, ranges = IRanges(start = feline_chr_sizes$start, end = feline_chr_sizes$end)) #make into grange object
-ocel_genome <- feline_genome_gr #making the custom plot type
-seqlevels(ocel_genome) <- feline_chr_sizes$chr
-seqlengths(ocel_genome) <- feline_chr_sizes$end
-
-#making hom file into a granges file
-chr4plot<-chr4plot %>%
-  mutate(sample_id = gsub("-.*", "", sample_id))
-chr4_gr <- GRanges(
-  seqnames = paste0(chr4plot$sample_id),
-  ranges = IRanges(start = chr4plot$start, end = chr4plot$end),
-  kb = chr4plot$kb,
-  nsnp = chr4plot$nsnp,
-  sample_id = chr4plot$sample_id)
-
-#######
+######
 #calculate windowed heterozygosity (code pulled from Matt Smith)
 # Set parameters
 window_size <- 1e6             # 1 Mb
@@ -733,10 +502,206 @@ chr_midpoints <- chr_info %>% mutate(mid = chr_start + chr_len / 2)
 
 
 
-saveRDS(windowed_het, file = "windowed_het.RDS")
-
+saveRDS(windowed_het, file = "windowed_het.RDS") 
+#######
 #read in RDS if needed
 windowed_het<-readRDS(file = "windowed_het.RDS")
+
+####Visualizing ROH --karyotype plot --- individual plots working
+
+#make data frame for plotting
+plot_df <- data.frame(
+  chr = paste0(roh_seg_df$chromosome),  # Add 'chr' prefix if needed
+  start = roh_seg_df$start, #starting location of roh
+  end = roh_seg_df$end, #ending location of roh
+  kb = roh_seg_df$length_KB,   # ROH length in KB
+  nsnp = roh_seg_df$n_markers,   # Number of SNPs in ROH
+  sample_id = roh_seg_df$sample, # Individual ID
+  pop = roh_seg_df$pop #population information
+)
+#applying chromosome names for plots
+chr_map <- c(
+  "1" = "chr1",
+  "2" = "chr2",
+  "3" = "chr3",
+  "4" = "chr4",
+  "5" = "chr5",
+  "6" = "chr6",
+  "7" = "chr7",
+  "8" = "chr8",
+  "9" = "chr9",
+  "10" = "chr10",
+  "11" = "chr11",
+  "12" = "chr12",
+  "13" = "chr13",
+  "14" = "chr14",
+  "15" = "chr15",
+  "16" = "chr16",
+  "17" = "chr17"
+)
+plot_df$chr <- chr_map[plot_df$chr]
+
+#create custom feline genotype for karyoploteR, make a custom plot type for the 17 chr
+LP_chr_sizes <- data.frame(
+  chr = c(paste0("chr", 1:17)), 
+  start = rep(1, 17),
+  end = c(241490831,  # chr1 Chr lengths from NCBI ocelot reference (https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_058742865.1/)
+          170782778,  # chr2
+          140550405,  # chr3
+          207231548,  # chr4
+          154917953,  # chr5
+          149666277,  # chr6
+          142417080,  # chr7
+          222385042,  # chr8
+          159437941,  # chr9
+          154776197,  # chr10
+          116981451,   # chr11
+          90819563,   # chr12
+          96629807,   # chr13
+          95534813,   # chr14
+          64119235,   # chr15
+          62492039,   # chr16
+          44368689   # chr17
+  )
+)  
+feline_genome_gr <- GRanges(seqnames = LP_chr_sizes$chr, ranges = IRanges(start = LP_chr_sizes$start, end = LP_chr_sizes$end)) #make into grange object
+ocel_genome <- feline_genome_gr #making the custom plot type
+seqlevels(ocel_genome) <- LP_chr_sizes$chr
+seqlengths(ocel_genome) <- LP_chr_sizes$end
+
+# roh convert to GRanges object
+roh_gr <- GRanges(
+  seqnames = plot_df$chr,
+  ranges = IRanges(start = plot_df$start, end = plot_df$end),
+  kb = plot_df$kb,
+  nsnp = plot_df$nsnp,
+  sample_id = plot_df$sample_id) #making hom file into grange
+
+#make a GRange object
+het_points <- GRanges(
+  seqnames = paste0("chr", windowed_het$chr), 
+  ranges = IRanges(start = windowed_het$window_mid, width = rep(1,length(windowed_het$window_mid))),
+  het= windowed_het$het_per_snp,#heterozygous sites in a window/called SNP positions in a window; ala Saremi et al 2019 Supplemental Methods
+  sample_id = windowed_het$individual)
+
+params<-getDefaultPlotParams(6)
+params$topmargin<-5
+params$bottommargin<-3
+params$ideogramheight<-10
+params$dataideogrammax<-1
+params$data1outmargin<-2
+params$data2outmargin<-2
+params$leftmargin<-0.15
+# Sanitize function to make safe filenames
+sanitize_filename <- function(name) {
+  gsub("[^A-Za-z0-9_]", "_", name)  # Replace anything that's not a letter, number, or underscore
+}
+#####creating function for plotting -- individual
+plot_individual_roh <- function(sample_id, output_file = NULL) {
+  # Filter ROH data for specific individual
+  individual_roh <- roh_gr[mcols(roh_gr)$sample_id %in% sample_id]
+  
+  #filter het data for specific individual
+  clean_id<-gsub("-.*", "",sample_id)
+  
+  indiv_het<-het_points[mcols(het_points)$sample_id %in% clean_id]
+  # Determine if output should go to a file
+  if (!is.null(output_file)) {
+    pdf(output_file, width = 10, height = 7)
+  }
+  #create the plot using the custom genome
+  ind_kp <- plotKaryotype(genome = ocel_genome, plot.params = params, chromosomes = "all",
+                          plot.type = 6, main = paste("ROH for", sample_id))
+  
+  #plot individuals
+  kpRect(ind_kp, 
+         chr = as.character(seqnames(individual_roh)), 
+         x0 = start(individual_roh), 
+         x1 = end(individual_roh),
+         y0 = 0, 
+         y1 = 1, 
+         col = "#FF000080",  # Semi-transparent red
+         border = "#FF0000",
+         r0 = 0, r1 = 1,
+         data.panel = "ideogram")
+  kpAddBaseNumbers(ind_kp, tick.dist = 10000000, tick.len = 0.5, tick.col="black", cex=0.5,
+                   minor.tick.dist = 1000000, minor.tick.len = 0, minor.tick.col = "black")
+  
+  kpAxis(ind_kp, ymin = 0, ymax= 1, cex = 0.6,data.panel="ideogram")
+  
+  kpPoints(ind_kp, 
+           data=indiv_het,
+           y=indiv_het$het,
+           data.panel= "ideogram",
+           cex =0.4
+  )
+  # Close file if opened
+  if (!is.null(output_file)) {
+    dev.off()
+  }
+  # Return the filtered data
+  return(individual_roh)
+  return(indiv_het)
+}
+
+##using the function -- plotting individual roh
+unique_samples <- unique(plot_df$sample_id)
+
+# Create directory for plots
+dir.create("wild_roh_plots", showWarnings = FALSE)
+
+
+# Loop through each sample and create sanitized output files
+for (sample_id in unique_samples) {
+  safe_id <- sanitize_filename(sample_id)
+  output_file <- paste0("wild_roh_plots/", safe_id, "_roh_plot.pdf")
+  plot_individual_roh(sample_id, output_file)
+}
+files<-list.files("./wild_roh_plots/")
+files_w_path<-rep(paste0("./wild_roh_plots/",files))
+
+pdf_combine(input = files_w_path, output = "./wild_roh_plots/all_indiv_roh_plots.pdf")
+
+#clean enviornment of all but the plots needed to combine at end
+rm(list=setdiff(ls(),c("FROHvHet", "exp_gen")))
+
+###ROH single chrom plot
+#reading in data
+roh_chr4 <- read.csv("hmm_roh_seg_categorized.csv", header = TRUE)
+chr4_df <- data.frame(
+  chr = paste0(roh_chr4$chromosome),  # Add 'chr' prefix if needed
+  start = roh_chr4$start, #starting location of roh
+  end = roh_chr4$end, #ending location of roh
+  kb = roh_chr4$length_KB,   # ROH length in KB
+  nsnp = roh_chr4$n_markers,   # Number of SNPs in ROH
+  sample_id = roh_chr4$sample, # Individual ID
+  pop = roh_chr4$pop #population information
+)
+#filtering dataframe for only chrome 4
+chr4plot<- chr4_df[chr4_df$chr == "4", ]
+
+#plotting for Figure 3
+#creating a custom genotype for karyoploter for chrom 4 only
+#I have to duplicate chr4 for the total number of individuals I want to
+feline_chr_sizes <- data.frame(
+  chr = c("LO01F", "LO03M", "OM283", "OF304", "E14F", "E33M"),
+  start = rep(1,6),
+  end = rep(207231548,6)  # chr4 length only
+) 
+feline_genome_gr <- GRanges(seqnames = feline_chr_sizes$chr, ranges = IRanges(start = feline_chr_sizes$start, end = feline_chr_sizes$end)) #make into grange object
+ocel_genome <- feline_genome_gr #making the custom plot type
+seqlevels(ocel_genome) <- feline_chr_sizes$chr
+seqlengths(ocel_genome) <- feline_chr_sizes$end
+
+#making hom file into a granges file
+chr4plot<-chr4plot %>%
+  mutate(sample_id = gsub("-.*", "", sample_id))
+chr4_gr <- GRanges(
+  seqnames = paste0(chr4plot$sample_id),
+  ranges = IRanges(start = chr4plot$start, end = chr4plot$end),
+  kb = chr4plot$kb,
+  nsnp = chr4plot$nsnp,
+  sample_id = chr4plot$sample_id)
 
 #filter to only Chr4
 windowed_het_chr4<-windowed_het %>%
