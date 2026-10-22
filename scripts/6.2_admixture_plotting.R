@@ -119,6 +119,15 @@ w_k2_long <- pivot_longer(
 
 w_k2_long$Pop <- str_to_title(w_k2_long$Pop)
 
+#fix names OM274 should be OF274; E33M should be E22M
+
+w_k2_long<-w_k2_long%>%
+  mutate(ID = case_when(
+    ID == "OM274" ~ "OF274",
+    ID == "E33M" ~ "E22M",
+    TRUE ~ ID
+  ))
+
 #plot code
 w_k2plot <-
   ggplot(w_k2_long, aes(x = factor(ID), y = proportion, fill = ancestry)) +

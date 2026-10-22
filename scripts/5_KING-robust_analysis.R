@@ -38,11 +38,11 @@ dir.create("../../../results/kinship")
 write.csv(king.wild.matrix, "../../../results/kinship/wild_pairwise_kinship_manu.csv")
 
 #formatting for plotting
-king.wild.matrix <- left_join(king.wild.matrix, wild_origins, by = c("IID1"="ID"))%>%
-  rename(Pop1=Pop) #attach population
+king.wild.matrix <- left_join(king.wild.matrix, wild_origins, by = c("IID1"="ID")) %>%
+  dplyr::rename(Pop1 = Pop) #attach population
 
 king.wild.matrix<-left_join(king.wild.matrix, wild_origins, by = c("IID2"="ID"))%>%
-  rename(Pop2=Pop) #attach population
+  dplyr::rename(Pop2=Pop) #attach population
 
 king.wild.matrix<-king.wild.matrix%>%
   mutate(Pop1 = case_when(
@@ -59,6 +59,20 @@ king.wild.matrix<-king.wild.matrix%>%
     IID1 == "E32M" ~ "rdisp",
     TRUE ~ Pop2
   )) #classify dispersers
+
+#fix names OM274 should be OF274; E33M should be E22M
+
+king.wild.matrix<-king.wild.matrix%>%
+  mutate(IID1 = case_when(
+    IID1 == "OM274" ~ "OF274",
+    IID1 == "E33M" ~ "E22M",
+    TRUE ~ IID1
+  ))%>%
+  mutate(IID2 = case_when(
+    IID2 == "OM274" ~ "OF274",
+    IID2 == "E33M" ~ "E22M",
+    TRUE ~ IID2
+  ))
 
 king.wild.matrix1<-king.wild.matrix%>%
   arrange(Pop1) #arrange so that ranch, rdisp, refuge (rdisp was used to hack alphabetizing)
@@ -102,7 +116,7 @@ new_ordered_matrix_king<- new_ordered_matrix_king %>%
 #heat map of kinship for wild individuals -- binned
 kinship_plot<-ggplot(data = new_ordered_matrix_king, aes(x=IID1, y=IID2, fill = KINSHIP)) +
   geom_tile(color="white") +
-  scale_fill_stepsn(name = "Kinship", breaks = c(0, 0.04, 0.1, 0.2),
+  scale_fill_stepsn(name = "Kinship", breaks = c(0, 0.0442, 0.0884, 0.177), #https://www.kingrelatedness.com/manual.shtml#WITHIN
                     limit = c(0, 0.3),
                     labels = c("Unrelated", "3rd Degree", "2nd Degree", "1st Degree"),
                     aesthetics = "fill",

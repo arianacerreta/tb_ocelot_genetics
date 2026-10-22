@@ -507,6 +507,21 @@ saveRDS(windowed_het, file = "windowed_het.RDS")
 #read in RDS if needed
 windowed_het<-readRDS(file = "windowed_het.RDS")
 
+#fix names in windowed_het
+windowed_het<-windowed_het%>%
+  mutate(individual = case_when(
+  individual == "OM274" ~ "OF274",
+  individual == "E33M" ~ "E22M",
+  TRUE ~ individual
+))
+#fix names in roh_seg_df "E33M-1" "OM274-3B"
+
+roh_seg_df<-roh_seg_df%>%
+  mutate(sample = case_when(
+    sample == "OM274-3B" ~ "OF274-3B",
+    sample == "E33M-1" ~ "E22M-1",
+    TRUE ~ sample
+  ))
 ####Visualizing ROH --karyotype plot --- individual plots working
 
 #make data frame for plotting
@@ -663,7 +678,7 @@ files_w_path<-rep(paste0("./wild_roh_plots/",files))
 pdf_combine(input = files_w_path, output = "./wild_roh_plots/all_indiv_roh_plots.pdf")
 
 #clean enviornment of all but the plots needed to combine at end
-rm(list=setdiff(ls(),c("FROHvHet", "exp_gen")))
+rm(list=setdiff(ls(),c("FROHvHet", "exp_gen", "windowed_het")))
 
 ###ROH single chrom plot
 #reading in data
@@ -680,11 +695,18 @@ chr4_df <- data.frame(
 #filtering dataframe for only chrome 4
 chr4plot<- chr4_df[chr4_df$chr == "4", ]
 
+#rename om274 and E33M
+chr4plot<-chr4plot%>%
+mutate(sample_id = case_when(
+  sample_id == "OM274" ~ "OF274",
+  sample_id == "E33M" ~ "E22M",
+  TRUE ~ sample_id
+))
 #plotting for Figure 3
 #creating a custom genotype for karyoploter for chrom 4 only
 #I have to duplicate chr4 for the total number of individuals I want to
 feline_chr_sizes <- data.frame(
-  chr = c("LO01F", "LO03M", "OM283", "OF304", "E14F", "E33M"),
+  chr = c("LO01F", "LO03M", "OM283", "OF304", "E14F", "E22M"),
   start = rep(1,6),
   end = rep(207231548,6)  # chr4 length only
 ) 
@@ -715,7 +737,7 @@ het_points <- GRanges(
   sample_id = windowed_het_chr4$individual)
 
 #LO01F-1,LO03M-1,OM283-2 (big ROH),LAO03M-1 (big ROH), OF304-1A (little ROH), E33M-1 (little ROH), E14F-1 (big ROH)
-sample_id<-c("E33M", "E14F","OM283", "OF304","LO03M","LO01F") 
+sample_id<-c("E22M", "E14F","OM283", "OF304","LO03M","LO01F") 
 individual_roh <- chr4_gr[mcols(chr4_gr)$sample_id %in% sample_id]
 #"ranch" = "#CC79A7", "refuge" = "#0072B2"
 color_ref<-matrix(data = NA, ncol = 3, nrow = length(individual_roh@seqnames@values))
@@ -736,7 +758,7 @@ params$data2outmargin<-2
 params$leftmargin<-0.15
 
 #start plot
-w_kp <- plotKaryotype(genome = ocel_genome, chromosomes = c("E33M", "E14F","OM283", "OF304","LO03M","LO01F"),
+w_kp <- plotKaryotype(genome = ocel_genome, chromosomes = c("E22M", "E14F","OM283", "OF304","LO03M","LO01F"),
                       plot.params = params,
                       plot.type = 6,
                       cex = 0.5
@@ -794,7 +816,7 @@ kary_labelled<-ggdraw(kary)+
   draw_label("0", x=0.135, y=0.265, color = "black", size = 6)+
   draw_label("0", x=0.135, y=0.114, color = "black", size = 6)+
   draw_label("Heterozygosity", angle = 90, x = 0.09, y=0.55, size = 11, color = "black")+
-  draw_label("E33M", x=0.536, y=0.965, color = "black", size = 6)+ #"E33M", "E14F","OM283", "OF304","LO03M","LO01F"
+  draw_label("E22M", x=0.536, y=0.965, color = "black", size = 6)+ #"E33M", "E14F","OM283", "OF304","LO03M","LO01F"
   draw_label("E14F", x=0.536, y=0.810, color = "black", size = 6)+
   draw_label("OM283", x=0.535, y=0.66, color = "black", size = 6)+
   draw_label("OF304", x=0.535, y=0.51, color = "black", size = 6)+
