@@ -117,11 +117,9 @@ the United States. In prep.
 
 Fork this repository to your computer. Download additional input files from 
 [Zenodo](https://doi.org/10.5281/zenodo.23545042). Download [ocelot reference genome](https://ncbi.nlm.nih.gov/datasets/genome/GCA_058742865.1/). 
-To recreate intermediate files starting with ```allInd_SNPs_autosomes.vcf.gz``` start at 
-line 44 after reading in paths in [1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh) 
-and follow through the pipeline as listed below. Original input file ```joint_call.LAO03M.20251202.vcf.gz``` exceeds 
-file size limits on Zenodo but can be made available upon reasonable request.  To avoid long processing times 
-in pre-processing steps, begin with intermediate file ```allInd_SNPs_autosomes_bi_gq9.vcf.gz```and [2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R). 
+Original input file ```joint_call.LAO03M.20251202.vcf.gz``` exceeds 
+file size limits on Zenodo but can be made available upon reasonable request for use with [1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh).  
+To avoid long processing times in pre-processing steps, begin with intermediate file ```allInd_SNPs_autosomes_bi_gq9.vcf.gz```and [2_PLINK_preanalysis.R](./scripts/2_PLINK_preanalysis.R). 
 
 *Most* paths are internally referenced within the code with notable exceptions 
 being your path to bcftools, PLINK, ADMIXTURE, vcftools, and original input files downloaded 
@@ -130,6 +128,8 @@ from Zenodo. Paths that will need to be updated are annotated within the code or
 #### Filtering steps
 
 [1_bcftools_preprocessing.sh](./scripts/1_bcftools_preprocessing.sh)
+
+- skip this step if starting with ```allInd_SNPs_autosomes_bi_gq9.vcf.gz```
 
 - select autosomes, remove indels and non-biallelic snps, filter for genotype quality >9 
 
