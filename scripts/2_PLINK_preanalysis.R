@@ -106,6 +106,9 @@ system(paste0(PLINKpath,"/plink --bfile ../SNP_wild_dp7_gq9_bi --chr-set 17 --ke
 #--hwe: 566 variants removed due to Hardy-Weinberg exact test.
 #1258598 variants and 44 samples pass filters and QC.
 
+####Export full vcf
+system(paste0(PLINKpath, "/plink2 --bfile wild_kin_roh_filter --chr-set 17 --export vcf-4.2 bgz --out wild_kin_roh_filter"))
+
 #for bcftools roh selection: ld pruning is required as it assumes every base is independent
 system(paste0(PLINKpath,"/plink --bfile wild_kin_roh_filter --chr-set 17 --keep-allele-order --indep-pairwise 50 5 0.5 --out roh_LDpruned_0.5_out")) #makes an out and in files of SNPs to keep and SNPs to remove
 #Pruning complete.  1171476 of 1258598 variants removed.

@@ -269,7 +269,7 @@ p<-ggplot(gen_plot_df, aes(x = gen_bins, fill = pop)) +
   theme(
     axis.text.x = element_text(size = 10, color = "black"),
     axis.text.y = element_text(size = 10, color = "black"),
-    axis.title.x = element_text(size = 11, vjust = -6),
+    axis.title.x = element_text(size = 11, vjust = -3.5),
     axis.title.y = element_text(size = 11),
     legend.title = element_text(size = 11),
     legend.text = element_text(size = 10),
@@ -280,15 +280,15 @@ p<-ggplot(gen_plot_df, aes(x = gen_bins, fill = pop)) +
   )
 
 exp_gen<-ggdraw(p)+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[1],")"), x = 0.932, y = 0.225, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[2],")"), x = 0.826, y = 0.225, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[3],")"), x = 0.718, y = 0.225, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[4],")"), x = 0.605, y = 0.225, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[5],")"), x = 0.498, y = 0.225, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[6],")"), x = 0.387, y = 0.225, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[7],")"), x = 0.278, y = 0.225, size = 6, color = "black")+
-  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[8],")"), x = 0.170, y = 0.225, size = 6, color = "black")+
-  draw_label("(ROH length in Mb)", x = 0.55, y = 0.09, size = 8, color = "black")
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[1],")"), x = 0.932, y = 0.265, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[2],")"), x = 0.826, y = 0.265, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[3],")"), x = 0.716, y = 0.265, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[4],")"), x = 0.607, y = 0.265, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[5],")"), x = 0.499, y = 0.265, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[6],")"), x = 0.387, y = 0.265, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[7],")"), x = 0.278, y = 0.265, size = 6, color = "black")+
+  draw_label(paste0("(",(levels(unique(gen_plot_df$range_label)))[8],")"), x = 0.170, y = 0.265, size = 6, color = "black")+
+  draw_label("(ROH length in Mb)", x = 0.55, y = 0.15, size = 8, color = "black")
 
  
 #new Categories for Table 2
@@ -351,6 +351,12 @@ individuals_per_pop <- data.frame(
   n_individuals = c(23, 21)
 )
 
+MB_boundary_numbers<-c(1,2,4,6,8,10,20,30,40,50,60,70,80)
+gens_forMB_bounds<-100/(2*(1.1)*MB_boundary_numbers)
+
+min_gens<-c(MB[1],MB)
+min_calc<-c(MB,MB[length(MB)])
+
 normalized_roh <- population_category_counts %>%
   left_join(individuals_per_pop, by = "pop") %>%
   group_by(pop) %>%
@@ -366,9 +372,10 @@ normalized_roh <- population_category_counts %>%
   ungroup()
 write.csv(normalized_roh, "pop_normalized_roh.csv")
 
+
 #plotting
-ggplot(data = normalized_roh, aes(x = Category2, y = Avg_ROH_Count_Per_Individual, group = pop))+
-  geom_line(aes(color = pop))+
+avg_roh_count<-ggplot(data = normalized_roh, aes(x = Category2, y = Avg_ROH_Count_Per_Individual, group = pop))+
+  geom_line(data = normalized_roh, aes(color = pop), linewidth = 1.5, alpha = 0.7)+
   scale_color_manual(values = c("ranch" = "#D55E00", "refuge" = "#0072B2"),
                     labels = c("ranch" = "Ranch", "refuge" = "Refuge")) +
   labs(
@@ -378,16 +385,16 @@ ggplot(data = normalized_roh, aes(x = Category2, y = Avg_ROH_Count_Per_Individua
   ) +
   theme_minimal() +
   theme(
-    axis.text.x = element_text(size = 10, color = "black", angle = 90),
-    axis.text.y = element_text(size = 10, color = "black"),
-    axis.title.x = element_text(size = 11, vjust = -6),
+    axis.text.x = element_text(size = 9, color = "black", angle = 90),
+    axis.text.y = element_text(size = 9, color = "black"),
+    axis.title.x = element_text(size = 11),
     axis.title.y = element_text(size = 11),
     legend.title = element_text(size = 11),
     legend.text = element_text(size = 10),
     legend.box.background = element_rect(color = "#e5e5e5", fill = "#f9f9f9", size = 0.5),
     legend.position = c(0.98,0.98),
     legend.justification = c("right", "top"),
-    plot.margin = margin(b= 1.5, t = 0.5,l = 0.7, unit = "cm")
+    plot.margin = margin(b= 0.5, t = 0.5,l = 0.7, unit = "cm")
   )
 ##################################################################
 ######
@@ -678,7 +685,7 @@ files_w_path<-rep(paste0("./wild_roh_plots/",files))
 pdf_combine(input = files_w_path, output = "./wild_roh_plots/all_indiv_roh_plots.pdf")
 
 #clean enviornment of all but the plots needed to combine at end
-rm(list=setdiff(ls(),c("FROHvHet", "exp_gen", "windowed_het")))
+rm(list=setdiff(ls(),c("FROHvHet", "exp_gen", "windowed_het", "avg_roh_count")))
 
 ###ROH single chrom plot
 #reading in data
@@ -698,8 +705,8 @@ chr4plot<- chr4_df[chr4_df$chr == "4", ]
 #rename om274 and E33M
 chr4plot<-chr4plot%>%
 mutate(sample_id = case_when(
-  sample_id == "OM274" ~ "OF274",
-  sample_id == "E33M" ~ "E22M",
+  sample_id == "OM274-3B" ~ "OF274-3B",
+  sample_id == "E33M-1" ~ "E22M-1",
   TRUE ~ sample_id
 ))
 #plotting for Figure 3
@@ -724,6 +731,7 @@ chr4_gr <- GRanges(
   kb = chr4plot$kb,
   nsnp = chr4plot$nsnp,
   sample_id = chr4plot$sample_id)
+
 
 #filter to only Chr4
 windowed_het_chr4<-windowed_het %>%
@@ -836,9 +844,16 @@ g1<-plot_grid(kary_labelled, FROHvHet,
               labels = c('A','B'),
               rel_widths = c(1.25,1))
 
-figure3<-plot_grid(g1,exp_gen,
-                   nrow = 2,
-                   labels = c("","C"), 
-                   rel_heights = c(1.25,1))
+bottom_panel<-plot_grid(avg_roh_count, Ne_final,
+                        ncol=2,
+                        labels = c('D','E'),
+                        rel_widths = c(1,1.2))
+
+figure3<-plot_grid(g1,exp_gen,bottom_panel,
+                   nrow = 3,
+                   labels = c("","C",""), 
+                   rel_heights = c(1.3,1, 1.25))
+
+#run 9.3_plot_Ne_R and come back for plotting
 
 ggsave("../../figures/figure3.png", dpi = 1200) #Saving 7.52 x 7.48 in image

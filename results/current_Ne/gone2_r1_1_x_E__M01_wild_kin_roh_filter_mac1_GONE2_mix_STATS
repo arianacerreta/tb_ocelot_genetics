@@ -1,0 +1,59 @@
+# (GONE v2.0)
+# Command: gone2 -g 0 -x -r 1.1 -o gone2_r1_1_x_E__M01_wild_kin_roh_filter_mac1 -E -M 0.01 wild_kin_roh_filter_mac1.vcf
+# Running time:497.02sec
+#
+# PREPROCESSING INFORMATION:
+# Temporal Ne estimation using unphased diploid data under the assumption of
+#   a metapopulation model with panmixia within subpopulations.
+# The marker locations in a physical map are known and the chromosome sizes and the
+#   total genome size will be calculated using those locations. The physical map will be
+#   converted into a genetic map using a constant recombination rate across the genome: 
+#   distances in Morgans will be calculated using the physical distances (in Mb).
+# Ne will be inferred using the recombination rates between loci and the weighted cuadratic
+#   correlations of alleles of loci pairs.
+# The historical Ne series will inferred by assuming that observed correlation between
+#   sites with recombination rate c reflects the Ne of 1/(2c) generations ago.
+#
+# INPUT PARAMETERS:
+# Type of genotyping data. 0:unphased diploids, 1:haploids, 2:phased diploids, 3:pseudohaploids:
+0
+# Rate of base call errors:
+0.00000
+# Number of chromosomes:
+17
+# Genome size in Morgans:
+25.3888
+# Genome size in Mb:
+2308.08
+# Total number of individuals in the input file:
+44
+# Number of individuals included in the analysis:
+44
+# Average Number of individuals included in the analysis (corrected for missing genotypes):
+40.9364
+# Effective Number of individuals for correlations (corrected for missing genotypes):
+38.1740
+# Number of markers in the input file:
+477244
+# Number of SNPs included in the analysis (only polymorphic and with less than 20% missing data):
+179006
+# Proportion of missing data:
+0.13240815
+#
+# Estimated Fis value of the population (deviation from H-W proportions):
+0.07008386
+# Heterozygosity observed in the sample (only polymorphic sites):
+0.34468578
+# Heterozygosity observed in the sample (all sites):
+0.34468578
+# Heterozygosity expected (H-W eq.) in the sample (only polymorphic sites):
+0.36528407
+# Heterozygosity expected (H-W eq.) in the sample (all sites):
+0.36528407
+#
+# Number of subpopulations in the metapopulation:
+2
+# Fst among subpopulations:
+0.12264429
+# Migration rate:
+0.01619813
