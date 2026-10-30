@@ -97,7 +97,7 @@ Ne<-ggplot(only_no_maf, aes(x = years, y = N_T))+
 
 Ne_final<-ggdraw(Ne)+
   draw_label("Arkansas specimen collected", x = 0.25, y = 0.63, size = 7, color = "gray30", angle = 90)+
-  draw_label("Suspected extirpation", x = 0.205, y = 0.63, size = 7, color = "#ca4239", angle = 90)+
+  draw_label("Limited detections", x = 0.205, y = 0.63, size = 7, color = "#ca4239", angle = 90)+
   #draw_label("1492 CE", x = 0.53, y = 0.58, size = 10, color = "gray30", angle = 90)+
   draw_label("Pre-Columbian era", x = 0.58, y = 0.63, size = 7, color = "gray30", angle= 90)
 
