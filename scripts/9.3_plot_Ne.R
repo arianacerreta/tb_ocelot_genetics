@@ -8,20 +8,20 @@ setwd("./results/current_Ne/")
 
 ###compare maf
 #Since GONE2 uses only polymorphic loci, pre-filtered with --mac 1 in plink
-no_maf<-read.delim("./gone2_r1_1_x_E_M0_wild_kin_roh_filter_mac1_GONE2_mix_density.tsv")
+no_maf<-read.delim("./updatedGONE2_102726/gone2_update_r1_1_x_E_M0_wild_kin_roh_filter_mac1_GONE2_mix_density.tsv")
 # Number of markers in the input file: 477244
 # Number of SNPs included in the analysis (only polymorphic and with less than 20% missing data):20000
-maf01<-read.delim("./gone2_r1_1_x_E__M01_wild_kin_roh_filter_mac1_GONE2_mix_density.tsv")
+maf01<-read.delim("./updatedGONE2_102726/gone2_update_r1_1_x_E__M01_wild_kin_roh_filter_mac1_GONE2_mix_density.tsv")
 # Number of markers in the input file: 477244
 # Number of SNPs included in the analysis (only polymorphic and with less than 20% missing data): 179006
 ###don't understand why GONE2 didn't subsample to 20000 by default...I tried forcing with -s 20000 and it did the same thing
-maf05<-read.delim("./gone2_r1_1_x_E__M05_wild_kin_roh_filter_mac1_GONE2_mix_density.tsv")
+maf05<-read.delim("./updatedGONE2_102726/gone2_update_r1_1_x_E_M05_wild_kin_roh_filter_mac1_GONE2_mix_density.tsv")
 # Number of markers in the input file: 477244
 # Number of SNPs included in the analysis (only polymorphic and with less than 20% missing data): 165855
 ###don't understand why GONE2 didn't subsample to 20000 by default...did not bother attempting to force since that didn't work for maf01
-no_maf_NT<-read.delim("./gone2_r1_1_x_E_M0_wild_kin_roh_filter_mac1_GONE2_mix_Ne")
-maf01_NT<-read.delim("./gone2_r1_1_x_E__M01_wild_kin_roh_filter_mac1_GONE2_mix_Ne")
-maf05_NT<-read.delim("./gone2_r1_1_x_E__M05_wild_kin_roh_filter_mac1_GONE2_mix_Ne")
+no_maf_NT<-read.delim("./updatedGONE2_102726/gone2_update_r1_1_x_E_M0_wild_kin_roh_filter_mac1_GONE2_mix_Ne")
+maf01_NT<-read.delim("./updatedGONE2_102726/gone2_update_r1_1_x_E__M01_wild_kin_roh_filter_mac1_GONE2_mix_Ne")
+maf05_NT<-read.delim("./updatedGONE2_102726/gone2_update_r1_1_x_E_M05_wild_kin_roh_filter_mac1_GONE2_mix_Ne")
 
 no_maf_NT$maf<-rep(0, length(no_maf_NT$Generation))
 maf01_NT$maf<-rep(0.01, length(maf01_NT$Generation))
@@ -55,13 +55,13 @@ summary_density<-combo_density%>%
 summary_all<- left_join(summary_density, compare_maf, by = c("maf","Generation"))
 
 ggplot(summary_all, aes(x = years, y = N_T, color = maf))+
-  geom_ribbon(aes(x = years, ymax = N_T + sd, ymin = N_T -sd, fill = maf), alpha = 0.3)+
-  geom_step(linewidth = 1)+
+  geom_ribbon(aes(x = years, ymax = N_T + sd, ymin = N_T -sd, fill = maf, color = maf), alpha = 0.3)+
+  geom_step(linewidth = 1, alpha = 0.3)+
   labs(x= "Years Ago", y = expression(N[e]), fill = "MAF", color = "MAF")+
-  scale_color_manual(values = c("magenta","blue","yellow"),
-                     limits = c("0", "0.01", "0.05"))+
-  scale_fill_manual(values = c("magenta","blue","yellow"),
-                    limits = c("0", "0.01", "0.05"))+
+  scale_color_manual(values = c("hotpink","goldenrod1","deepskyblue"),
+                     limits = c("0.05", "0.01", "0"))+
+  scale_fill_manual(values = c("hotpink","goldenrod1","deepskyblue"),
+                    limits = c("0.05", "0.01", "0"))+
   scale_y_continuous(expand = c(0,0), limits = c(0,400))+
   scale_x_continuous(expand = c(0,0))+
   theme_bw()+
@@ -72,6 +72,8 @@ ggplot(summary_all, aes(x = years, y = N_T, color = maf))+
         axis.title.y = element_text(size = 11))
 
 ggsave("../../figures/ne_for_maf.png", dpi = 1200) #change to .pdf for pdf; .png for png
+
+
 
 #########################################
 

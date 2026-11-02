@@ -1,6 +1,6 @@
 # (GONE v2.0)
-# Command: gone2_tui -g 0 -x -r 1.1 -o gone2_r1.1_x_E_wild_no_miss_nomaf -E wild_Ne_no_miss_nomaf.vcf
-# Running time:12.6565sec
+# Command: gone2 -g 0 -x -r 1.1 -o gone2_update_r1_1_x_E__M01_wild_kin_roh_filter_mac1 -E -M 0.01 wild_kin_roh_filter_mac1.vcf
+# Running time:90.7177sec
 #
 # PREPROCESSING INFORMATION:
 # Temporal Ne estimation using unphased diploid data under the assumption of
@@ -22,38 +22,38 @@
 # Number of chromosomes:
 17
 # Genome size in Morgans:
-25.2987
+25.3888
 # Genome size in Mb:
-2299.88
+2308.08
 # Total number of individuals in the input file:
 44
 # Number of individuals included in the analysis:
 44
 # Average Number of individuals included in the analysis (corrected for missing genotypes):
-44.0000
+40.9364
 # Effective Number of individuals for correlations (corrected for missing genotypes):
-44.0000
+38.1819
 # Number of markers in the input file:
-14697
+477244
 # Number of SNPs included in the analysis (only polymorphic and with less than 20% missing data):
-5583
+20000
 # Proportion of missing data:
-0.00000000
+0.13222971
 #
 # Estimated Fis value of the population (deviation from H-W proportions):
-0.06735101
+0.07008062
 # Heterozygosity observed in the sample (only polymorphic sites):
-0.34455246
+0.34468578
 # Heterozygosity observed in the sample (all sites):
-0.13088633
+0.34468578
 # Heterozygosity expected (H-W eq.) in the sample (only polymorphic sites):
-0.36495336
+0.36528407
 # Heterozygosity expected (H-W eq.) in the sample (all sites):
-0.13863609
+0.36528407
 #
 # Number of subpopulations in the metapopulation:
 2
 # Fst among subpopulations:
-0.12275358
+0.12282218
 # Migration rate:
-0.01478562
+0.01579467
