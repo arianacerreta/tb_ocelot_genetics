@@ -79,7 +79,7 @@ ggplot(chrom_pi, aes(x = factor(CHROM), y = mean_pi, fill = pop)) +
   geom_bar(stat = "identity", position = position_dodge(width = 0.7)) + 
   scale_y_continuous(labels = scales::number_format(accuracy = 0.00001),
                      expand = expansion(mult = c(0, 0.05))) +
-  scale_fill_manual(values = c("Ranch" = "#CC79A7", "Refuge" = "#0072B2")) +
+  scale_fill_manual(values = c("Ranch" = "#D55E00", "Refuge" = "#0072B2")) +
   labs(x = "Chromosome",
        y = "Mean π (Weighted)",
        fill = "Population") +
@@ -97,13 +97,26 @@ ggsave("./figures/weighted_pi.png", dpi = 1200)
 ggplot() +
   # Add population means with error bars
   geom_point(data = chrom_pi, aes(x = factor(CHROM), y = mean_pi, color = pop), 
-             size = 4, shape = 18) +
+             size = 4, shape = 18, position = position_dodge(width = 0.75)) +
   geom_errorbar(data = chrom_pi, 
                 aes(x = factor(CHROM), y = mean_pi, color = pop,
                     ymin = mean_pi - 1*sd_pi, ymax = mean_pi + 1*sd_pi), #updated to 1SD per comments-ALC9/9/2026
-                width = 0.2, size = 1) +
-  scale_color_manual(values = c("Ranch" = "#CC79A7", "Refuge" = "#009E73")) 
+                width = 0.2, size = 1,
+                position=position_dodge(width=0.75)
+                ) +
+  labs(x = "Chromosome",
+       y = "Mean π (Weighted)",
+       color = "Population")+
+  scale_color_manual(values = c("Ranch" = "#D55E00", "Refuge" = "#0072B2"))+
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 13.5),
+        axis.text.y = element_text(size = 12),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16),
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 12))
 
+ggsave("./figures/weighted_pi_with_error.png", dpi = 1200)
 #weighted genome wide pi -- weighted to reduce the affect of windows with low sites
 genome_pi_weighted <- all_pi %>%
   group_by(pop) %>%
